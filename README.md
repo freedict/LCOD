@@ -206,7 +206,6 @@ TODO: Add me!
 -   page for entry history
 -   page for searching patches
 -   page for adding users to admin group
--   set/unset approval on existing patches
 
 
 <a id="org831882b"></a>
