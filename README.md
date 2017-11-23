@@ -1,34 +1,33 @@
 <div id="table-of-contents">
-<h2>Table of Contents</h2>
+
+Table of Contents
+-----------------
+
 <div id="text-table-of-contents">
-<ul>
-<li><a href="#orgd17d93d">1. About</a></li>
-<li><a href="#org7e89901">2. Architecture</a></li>
-<li><a href="#org55b54ab">3. Tests</a></li>
-<li><a href="#org3dea49f">4. Adding support for specific dictionaries</a></li>
-<li><a href="#org492f51b">5. Installation</a>
-<ul>
-<li><a href="#orge12ca1d">5.1. Only testing the app</a>
-<ul>
-<li><a href="#org5aa37db">5.1.1. Prerequisites</a></li>
-<li><a href="#org0932e4c">5.1.2. Create database and the database user</a></li>
-<li><a href="#orgffc32c7">5.1.3. Generate the sql data files out of the tei</a></li>
-<li><a href="#org1950e6c">5.1.4. Install the postgres database extensions</a></li>
-<li><a href="#org262de5a">5.1.5. Populate database tables</a></li>
-<li><a href="#org7d2faef">5.1.6. install packages, configure server</a></li>
-<li><a href="#org06046d9">5.1.7. Start server</a></li>
-</ul>
-</li>
-<li><a href="#org29a0216">5.2. Full server setup</a></li>
-</ul>
-</li>
-<li><a href="#orgc5c10de">6. TO DO List</a></li>
-<li><a href="#org831882b">7. Contact</a></li>
-<li><a href="#org4a95f88">8. Licence</a></li>
-</ul>
-</div>
+
+-   [1. About](#orgd17d93d)
+-   [2. Architecture](#org7e89901)
+-   [3. Tests](#org55b54ab)
+-   [4. Adding support for specific dictionaries](#org3dea49f)
+-   [5. Installation](#org492f51b)
+    -   [5.1. Only testing the app](#orge12ca1d)
+        -   [5.1.1. Prerequisites](#org5aa37db)
+        -   [5.1.2. Create database and the database user](#org0932e4c)
+        -   [5.1.3. Generate the sql data files out of the
+            tei](#orgffc32c7)
+        -   [5.1.4. Install the postgres database
+            extensions](#org1950e6c)
+        -   [5.1.5. Populate database tables](#org262de5a)
+        -   [5.1.6. install packages, configure server](#org7d2faef)
+        -   [5.1.7. Start server](#org06046d9)
+    -   [5.2. Full server setup](#org29a0216)
+-   [6. TO DO List](#orgc5c10de)
+-   [7. Contact](#org831882b)
+-   [8. Licence](#org4a95f88)
+
 </div>
 
+</div>
 
 <a id="orgd17d93d"></a>
 
