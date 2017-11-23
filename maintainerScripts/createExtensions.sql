@@ -1,0 +1,2 @@
+CREATE EXTENSION citext;
+CREATE EXTENSION unaccent;
