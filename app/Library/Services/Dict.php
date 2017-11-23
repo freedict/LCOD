@@ -213,6 +213,19 @@ RETURNING id;
             $sqlCmd = "INSERT INTO $patchesTableIndex VALUES (:keyword, unaccent( :keyword_ ), :patchId)";
             DB::insert($sqlCmd, ['keyword' => $keyword, 'keyword_' => $keyword ,'patchId' => $patchId]);
         }
+        return $patchId;
+    }
+
+    public function submitPatchUpdate(string $dict, int $patchId, bool $approved, bool $mergedIntoTei, string $flags)
+    {
+        $patchesTable = 'patches_'.$dict;
+        $patchesTableIndex = $patchesTable.'_index';
+        $teiTable = 'tei_'.$dict;
+
+        // insert patch
+        DB::table($patchesTable)
+            ->where('id', $patchId)
+            ->update(['approved' => $approved, 'merged_into_tei' => $mergedIntoTei, 'flags' => $flags]);
     }
 
     public function lookupPatchGroup(string $dict, string $groupId)

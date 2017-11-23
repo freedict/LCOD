@@ -74,5 +74,12 @@
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
+
+    @if (Auth::check())
+        <script>
+         window.store.commit('setUserName', "{{ Auth::user()->name  }}");
+         window.store.commit('setUserRole', "{{ Auth::user()->role }}");
+        </script>
+    @endif
 </body>
 </html>

@@ -14375,7 +14375,10 @@ var store = new __WEBPACK_IMPORTED_MODULE_2_vuex__["a" /* default */].Store({
         searchTerm: "",
         groupId: "",
         newEntry: [],
-        didALookup: false
+        didALookup: false,
+        showEditEntryBox: false,
+        userName: "",
+        userRole: ""
     },
     mutations: {
         setSelectedDict: function setSelectedDict(state, dict) {
@@ -14398,10 +14401,18 @@ var store = new __WEBPACK_IMPORTED_MODULE_2_vuex__["a" /* default */].Store({
         },
         setDidALookup: function setDidALookup(state, data) {
             state.didALookup = data;
+        },
+        setShowEditEntryBox: function setShowEditEntryBox(state, data) {
+            state.showEditEntryBox = data;
+        },
+        setUserName: function setUserName(state, data) {
+            state.userName = data;
+        },
+        setUserRole: function setUserRole(state, data) {
+            state.userRole = data;
         }
     }
 });
-
 // vue
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -14424,6 +14435,7 @@ var app = new Vue({
     store: store,
     el: '#app'
 });
+window.store = store;
 
 /***/ }),
 /* 22 */
@@ -47775,6 +47787,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -47783,14 +47816,35 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     props: ["item"],
 
     data: function data() {
-        return { showEntryComponent: "" };
+        return { commentOnly: false, showEntryComponent: "", oldValApproved: "", oldValMergedIntoTei: "", oldValFlags: "" };
     },
+
+
+    methods: {
+        updatePatch: function updatePatch() {
+            var data = {
+                dict: this.selectedDict,
+                patchId: this.item.id,
+                flags: this.item.flags,
+                approved: this.item.approved,
+                mergedIntoTei: this.item.merged_into_tei
+            };
+            axios.post('/submitPatchUpdate/', data).then(function (response) {
+                location.reload();
+            });
+        }
+    },
+
     mounted: function mounted() {
         this.showEntryComponent = this.selectedDict.replace("_", "-") + "-show-entry";
+        this.oldValApproved = this.item.approved;
+        this.oldValMergedIntoTei = this.item.merged_into_tei;
+        this.oldValFlags = this.item.flags;
+        if (!this.item.approved && !this.item.merged_into_tei && !this.item.flags) this.commentOnly = true;
     },
 
 
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapState */])(['selectedDict'])
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapState */])(['selectedDict', 'userRole'])
 
 });
 
@@ -47857,24 +47911,232 @@ var render = function() {
           ])
         : _vm._e(),
       _vm._v(" "),
-      _vm.item.flags
+      !_vm.commentOnly && (_vm.item.flags || _vm.userRole == "admin")
         ? _c("tr", [
             _c("td", [_vm._v("Flags:")]),
-            _c("td", [_vm._v(_vm._s(_vm.item.flags))])
+            _vm._v(" "),
+            _vm.userRole == "admin"
+              ? _c("td", [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.item.flags,
+                        expression: "item.flags"
+                      }
+                    ],
+                    attrs: { type: "text" },
+                    domProps: { value: _vm.item.flags },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.item, "flags", $event.target.value)
+                      }
+                    }
+                  })
+                ])
+              : _c("td", [_vm._v(_vm._s(_vm.item.flags) + ">")])
           ])
         : _vm._e(),
       _vm._v(" "),
-      _vm.item.approved
+      !_vm.commentOnly && (_vm.item.approved || _vm.userRole == "admin")
         ? _c("tr", [
             _c("td", [_vm._v("Approved:")]),
-            _c("td", [_vm._v(_vm._s(_vm.item.approved))])
+            _vm._v(" "),
+            _vm.userRole == "admin"
+              ? _c("td", [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.item.approved,
+                        expression: "item.approved"
+                      }
+                    ],
+                    attrs: { type: "checkbox" },
+                    domProps: {
+                      checked: Array.isArray(_vm.item.approved)
+                        ? _vm._i(_vm.item.approved, null) > -1
+                        : _vm.item.approved
+                    },
+                    on: {
+                      change: function($event) {
+                        var $$a = _vm.item.approved,
+                          $$el = $event.target,
+                          $$c = $$el.checked ? true : false
+                        if (Array.isArray($$a)) {
+                          var $$v = null,
+                            $$i = _vm._i($$a, $$v)
+                          if ($$el.checked) {
+                            $$i < 0 && (_vm.item.approved = $$a.concat([$$v]))
+                          } else {
+                            $$i > -1 &&
+                              (_vm.item.approved = $$a
+                                .slice(0, $$i)
+                                .concat($$a.slice($$i + 1)))
+                          }
+                        } else {
+                          _vm.$set(_vm.item, "approved", $$c)
+                        }
+                      }
+                    }
+                  })
+                ])
+              : _c("td", [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.item.approved,
+                        expression: "item.approved"
+                      }
+                    ],
+                    attrs: { type: "checkbox", onclick: "return false;" },
+                    domProps: {
+                      checked: Array.isArray(_vm.item.approved)
+                        ? _vm._i(_vm.item.approved, null) > -1
+                        : _vm.item.approved
+                    },
+                    on: {
+                      change: function($event) {
+                        var $$a = _vm.item.approved,
+                          $$el = $event.target,
+                          $$c = $$el.checked ? true : false
+                        if (Array.isArray($$a)) {
+                          var $$v = null,
+                            $$i = _vm._i($$a, $$v)
+                          if ($$el.checked) {
+                            $$i < 0 && (_vm.item.approved = $$a.concat([$$v]))
+                          } else {
+                            $$i > -1 &&
+                              (_vm.item.approved = $$a
+                                .slice(0, $$i)
+                                .concat($$a.slice($$i + 1)))
+                          }
+                        } else {
+                          _vm.$set(_vm.item, "approved", $$c)
+                        }
+                      }
+                    }
+                  })
+                ])
           ])
         : _vm._e(),
       _vm._v(" "),
-      _vm.item.merged_into_tei
+      !_vm.commentOnly && (_vm.item.merged_into_tei || _vm.userRole == "admin")
         ? _c("tr", [
-            _c("td", [_vm._v("Merged into Upstream:")]),
-            _c("td", [_vm._v(_vm._s(_vm.item.merged_into_tei))])
+            _c("td", [_vm._v("Merged into upstream:")]),
+            _vm._v(" "),
+            _vm.userRole == "admin"
+              ? _c("td", [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.item.merged_into_tei,
+                        expression: "item.merged_into_tei"
+                      }
+                    ],
+                    attrs: { type: "checkbox" },
+                    domProps: {
+                      checked: Array.isArray(_vm.item.merged_into_tei)
+                        ? _vm._i(_vm.item.merged_into_tei, null) > -1
+                        : _vm.item.merged_into_tei
+                    },
+                    on: {
+                      change: function($event) {
+                        var $$a = _vm.item.merged_into_tei,
+                          $$el = $event.target,
+                          $$c = $$el.checked ? true : false
+                        if (Array.isArray($$a)) {
+                          var $$v = null,
+                            $$i = _vm._i($$a, $$v)
+                          if ($$el.checked) {
+                            $$i < 0 &&
+                              (_vm.item.merged_into_tei = $$a.concat([$$v]))
+                          } else {
+                            $$i > -1 &&
+                              (_vm.item.merged_into_tei = $$a
+                                .slice(0, $$i)
+                                .concat($$a.slice($$i + 1)))
+                          }
+                        } else {
+                          _vm.$set(_vm.item, "merged_into_tei", $$c)
+                        }
+                      }
+                    }
+                  })
+                ])
+              : _c("td", [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.item.merged_into_tei,
+                        expression: "item.merged_into_tei"
+                      }
+                    ],
+                    attrs: { type: "checkbox", onclick: "return false;" },
+                    domProps: {
+                      checked: Array.isArray(_vm.item.merged_into_tei)
+                        ? _vm._i(_vm.item.merged_into_tei, null) > -1
+                        : _vm.item.merged_into_tei
+                    },
+                    on: {
+                      change: function($event) {
+                        var $$a = _vm.item.merged_into_tei,
+                          $$el = $event.target,
+                          $$c = $$el.checked ? true : false
+                        if (Array.isArray($$a)) {
+                          var $$v = null,
+                            $$i = _vm._i($$a, $$v)
+                          if ($$el.checked) {
+                            $$i < 0 &&
+                              (_vm.item.merged_into_tei = $$a.concat([$$v]))
+                          } else {
+                            $$i > -1 &&
+                              (_vm.item.merged_into_tei = $$a
+                                .slice(0, $$i)
+                                .concat($$a.slice($$i + 1)))
+                          }
+                        } else {
+                          _vm.$set(_vm.item, "merged_into_tei", $$c)
+                        }
+                      }
+                    }
+                  })
+                ])
+          ])
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.item.merged_into_tei != this.oldValMergedIntoTei ||
+      _vm.item.approved != this.oldValApproved ||
+      _vm.item.flags != _vm.oldValFlags
+        ? _c("div", [
+            _c(
+              "a",
+              {
+                on: {
+                  click: function($event) {
+                    if (
+                      !("button" in $event) &&
+                      _vm._k($event.keyCode, "preven", undefined, $event.key)
+                    ) {
+                      return null
+                    }
+                    _vm.updatePatch($event)
+                  }
+                }
+              },
+              [_vm._v("update patch")]
+            )
           ])
         : _vm._e()
     ])
@@ -48107,6 +48369,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -48114,14 +48389,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     props: ['previousItem'],
 
     data: function data() {
-        return { editEntryComponent: "", oldEntry: "", commentTextarea: "", flagsInput: "", approvedCheckbox: "", mergedIntoTeiCheckbox: "", dict: "", groupId: "foo" };
+        return { showEditFlagsBox: false, editEntryComponent: "", oldEntry: "", commentTextarea: "", flagsInput: "", approvedCheckbox: "", mergedIntoTeiCheckbox: "", dict: "", groupId: "foo" };
     },
 
 
     methods: {
         submitPatch: function submitPatch() {
-            if (!$("#loggedIn").length) {
-                window.alert("You have to be logged in to submit patches!");
+            if (!this.$store.state.userName) {
+                window.alert("You have to be logged in to submit patches or comments!");
+                return;
+            }
+
+            if (!this.showEditEntryBox && !this.showEditFlagsBox && this.commentTextarea == "") {
+                window.alert("Your comment is empty!");
                 return;
             }
 
@@ -48138,6 +48418,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             axios.post('/submitPatch/', data).then(function (response) {
                 location.reload();
             });
+        },
+        setShowEditFlags: function setShowEditFlags(boolean) {
+            this.showEditFlagsBox = boolean;
+        },
+        cancelEditFlags: function cancelEditFlags() {
+            if (this.previousItem.hasOwnProperty('flags')) {
+                this.flagsInput = this.previousItem.flags;
+            } else {
+                this.flagsInput = "";
+            }
+            this.mergedIntoTeiCheckbox = false;
+            this.approvedCheckbox = false;
+            this.showEditFlagsBox = false;
         }
     },
 
@@ -48155,7 +48448,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
 
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapState */])(['newEntry', 'newEntryKeywords'])
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapState */])(['newEntry', 'newEntryKeywords', 'showEditEntryBox', 'userRole'])
 });
 
 /***/ }),
@@ -48175,7 +48468,174 @@ var render = function() {
         attrs: { entry: _vm.oldEntry }
       }),
       _vm._v(" "),
+      _c("br"),
+      _vm._v(" "),
       _c("table", [
+        _vm.showEditFlagsBox
+          ? _c("div", [
+              _c("fieldset", [
+                _c("legend", [_vm._v("Edit Flags")]),
+                _vm._v(" "),
+                _vm.userRole == "admin"
+                  ? _c("div", [
+                      _c("tr", [
+                        _c("td", [_vm._v("Approved:")]),
+                        _c("td", [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.approvedCheckbox,
+                                expression: "approvedCheckbox"
+                              }
+                            ],
+                            attrs: { type: "checkbox" },
+                            domProps: {
+                              checked: Array.isArray(_vm.approvedCheckbox)
+                                ? _vm._i(_vm.approvedCheckbox, null) > -1
+                                : _vm.approvedCheckbox
+                            },
+                            on: {
+                              change: function($event) {
+                                var $$a = _vm.approvedCheckbox,
+                                  $$el = $event.target,
+                                  $$c = $$el.checked ? true : false
+                                if (Array.isArray($$a)) {
+                                  var $$v = null,
+                                    $$i = _vm._i($$a, $$v)
+                                  if ($$el.checked) {
+                                    $$i < 0 &&
+                                      (_vm.approvedCheckbox = $$a.concat([$$v]))
+                                  } else {
+                                    $$i > -1 &&
+                                      (_vm.approvedCheckbox = $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1)))
+                                  }
+                                } else {
+                                  _vm.approvedCheckbox = $$c
+                                }
+                              }
+                            }
+                          })
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("tr", [
+                        _c("td", [_vm._v("Merged in Upstream")]),
+                        _c("td", [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.mergedIntoTeiCheckbox,
+                                expression: "mergedIntoTeiCheckbox"
+                              }
+                            ],
+                            attrs: { type: "checkbox" },
+                            domProps: {
+                              checked: Array.isArray(_vm.mergedIntoTeiCheckbox)
+                                ? _vm._i(_vm.mergedIntoTeiCheckbox, null) > -1
+                                : _vm.mergedIntoTeiCheckbox
+                            },
+                            on: {
+                              change: function($event) {
+                                var $$a = _vm.mergedIntoTeiCheckbox,
+                                  $$el = $event.target,
+                                  $$c = $$el.checked ? true : false
+                                if (Array.isArray($$a)) {
+                                  var $$v = null,
+                                    $$i = _vm._i($$a, $$v)
+                                  if ($$el.checked) {
+                                    $$i < 0 &&
+                                      (_vm.mergedIntoTeiCheckbox = $$a.concat([
+                                        $$v
+                                      ]))
+                                  } else {
+                                    $$i > -1 &&
+                                      (_vm.mergedIntoTeiCheckbox = $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1)))
+                                  }
+                                } else {
+                                  _vm.mergedIntoTeiCheckbox = $$c
+                                }
+                              }
+                            }
+                          })
+                        ])
+                      ])
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _c("tr", [
+                  _c("td", [_vm._v("Flags:")]),
+                  _c("td", [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.flagsInput,
+                          expression: "flagsInput"
+                        }
+                      ],
+                      domProps: { value: _vm.flagsInput },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.flagsInput = $event.target.value
+                        }
+                      }
+                    })
+                  ])
+                ]),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    on: {
+                      click: function($event) {
+                        if (
+                          !("button" in $event) &&
+                          _vm._k(
+                            $event.keyCode,
+                            "preventDefault",
+                            undefined,
+                            $event.key
+                          )
+                        ) {
+                          return null
+                        }
+                        _vm.cancelEditFlags()
+                      }
+                    }
+                  },
+                  [_vm._v("Cancel")]
+                )
+              ])
+            ])
+          : _c("div", [
+              _c(
+                "a",
+                {
+                  on: {
+                    click: function($event) {
+                      $event.preventDefault()
+                      _vm.setShowEditFlags(true)
+                    }
+                  }
+                },
+                [_vm._v("Edit Flags")]
+              )
+            ]),
+        _vm._v(" "),
+        _c("br"),
+        _vm._v(" "),
         _c("tr", [
           _c("td", [_vm._v("Comment:")]),
           _c("td", [
@@ -48201,130 +48661,31 @@ var render = function() {
           ])
         ]),
         _vm._v(" "),
-        _c("tr", [
-          _c("td", [_vm._v("Edit Flags:")]),
-          _c("td", [
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.flagsInput,
-                  expression: "flagsInput"
-                }
-              ],
-              domProps: { value: _vm.flagsInput },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
+        !_vm.showEditFlagsBox && !_vm.showEditEntryBox
+          ? _c(
+              "a",
+              {
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    _vm.submitPatch($event)
                   }
-                  _vm.flagsInput = $event.target.value
                 }
-              }
-            })
-          ])
-        ]),
-        _vm._v(" "),
-        _c("tr", [
-          _c("td", [_vm._v("Set Approved:")]),
-          _c("td", [
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.approvedCheckbox,
-                  expression: "approvedCheckbox"
-                }
-              ],
-              attrs: { type: "checkbox" },
-              domProps: {
-                checked: Array.isArray(_vm.approvedCheckbox)
-                  ? _vm._i(_vm.approvedCheckbox, null) > -1
-                  : _vm.approvedCheckbox
               },
-              on: {
-                change: function($event) {
-                  var $$a = _vm.approvedCheckbox,
-                    $$el = $event.target,
-                    $$c = $$el.checked ? true : false
-                  if (Array.isArray($$a)) {
-                    var $$v = null,
-                      $$i = _vm._i($$a, $$v)
-                    if ($$el.checked) {
-                      $$i < 0 && (_vm.approvedCheckbox = $$a.concat([$$v]))
-                    } else {
-                      $$i > -1 &&
-                        (_vm.approvedCheckbox = $$a
-                          .slice(0, $$i)
-                          .concat($$a.slice($$i + 1)))
-                    }
-                  } else {
-                    _vm.approvedCheckbox = $$c
+              [_vm._v("Submit Comment")]
+            )
+          : _c(
+              "a",
+              {
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    _vm.submitPatch($event)
                   }
                 }
-              }
-            })
-          ])
-        ]),
-        _vm._v(" "),
-        _c("tr", [
-          _c("td", [_vm._v("Set Merged in Upstream")]),
-          _c("td", [
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.mergedIntoTeiCheckbox,
-                  expression: "mergedIntoTeiCheckbox"
-                }
-              ],
-              attrs: { type: "checkbox" },
-              domProps: {
-                checked: Array.isArray(_vm.mergedIntoTeiCheckbox)
-                  ? _vm._i(_vm.mergedIntoTeiCheckbox, null) > -1
-                  : _vm.mergedIntoTeiCheckbox
               },
-              on: {
-                change: function($event) {
-                  var $$a = _vm.mergedIntoTeiCheckbox,
-                    $$el = $event.target,
-                    $$c = $$el.checked ? true : false
-                  if (Array.isArray($$a)) {
-                    var $$v = null,
-                      $$i = _vm._i($$a, $$v)
-                    if ($$el.checked) {
-                      $$i < 0 && (_vm.mergedIntoTeiCheckbox = $$a.concat([$$v]))
-                    } else {
-                      $$i > -1 &&
-                        (_vm.mergedIntoTeiCheckbox = $$a
-                          .slice(0, $$i)
-                          .concat($$a.slice($$i + 1)))
-                    }
-                  } else {
-                    _vm.mergedIntoTeiCheckbox = $$c
-                  }
-                }
-              }
-            })
-          ])
-        ]),
-        _vm._v(" "),
-        _c(
-          "a",
-          {
-            attrs: { href: "" },
-            on: {
-              click: function($event) {
-                $event.preventDefault()
-                _vm.submitPatch($event)
-              }
-            }
-          },
-          [_vm._v("Submit Patch")]
-        )
+              [_vm._v("Submit Patch")]
+            )
       ])
     ],
     1
@@ -48775,6 +49136,7 @@ module.exports = function listToStyles (parentId, list) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__eng_deu_parse_js__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(3);
 //
 //
 //
@@ -48821,6 +49183,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+
 
 
 
@@ -48829,7 +49192,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     props: ['entry'],
 
     data: function data() {
-        return { groupId: "foo", parsedEntry: "", showEditEntryBox: false };
+        return { groupId: "foo", parsedEntry: "" };
     },
     created: function created() {
         this.parsedEntry = __WEBPACK_IMPORTED_MODULE_0__eng_deu_parse_js__["c" /* parse */](this.entry);
@@ -48855,13 +49218,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.parsedEntry.senses[senseId].transes.push(new __WEBPACK_IMPORTED_MODULE_0__eng_deu_parse_js__["a" /* Trans */]());
         },
         setShowEditEntryBox: function setShowEditEntryBox(boolean) {
-            this.showEditEntryBox = boolean;
+            this.$store.commit('setShowEditEntryBox', boolean);
         },
         cancelEditEntry: function cancelEditEntry() {
             this.parsedEntry = __WEBPACK_IMPORTED_MODULE_0__eng_deu_parse_js__["c" /* parse */](this.entry);
-            this.showEditEntryBox = false;
+            this.$store.commit('setShowEditEntryBox', false);
         }
-    }
+    },
+
+    computed: Object(__WEBPACK_IMPORTED_MODULE_1_vuex__["b" /* mapState */])(['showEditEntryBox'])
+
 });
 
 /***/ }),

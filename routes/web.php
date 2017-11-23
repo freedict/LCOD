@@ -37,11 +37,26 @@ Route::post('/submitPatch/', function (Request $request) {
     $dictLib->validateGroupIdAndDict($input['dict'], $input['groupId']);
 
     if ($input['approved'] && User::findOrFail(Auth::id())->role != "admin"){
-        abort(400, "You cannot approv a patch without being an admin.");
+        abort(400, "You have to be admin for this operation.");
     }
 
     $dictLib->submitPatch($input['dict'], $input['keywords'], Auth::id(),
                           $input['groupId'], $input['newEntry'],
                           $input['comment'], $input['flags'],
                           $input['approved'], $input['mergedIntoTei']);
+})->middleware('auth');
+
+Route::post('/submitPatchUpdate/', function (Request $request) {
+    $dictLib = resolve('App\Library\Services\Dict');
+    $input = $request->all();
+    $input = array_map(function ($value) { return ($value != null) ? $value : ""; }, $input);
+
+    $dictLib->validateDict($input['dict']);
+
+    if (User::findOrFail(Auth::id())->role != "admin"){
+        abort(400, "You have to be admin for this operation.");
+    }
+
+    $dictLib->submitPatchUpdate($input['dict'], $input['patchId'],
+                                $input['approved'], $input['mergedIntoTei'], $input['flags']);
 })->middleware('auth');

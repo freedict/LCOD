@@ -165,6 +165,22 @@ RETURNING id;
         $this->assertEquals($result[0]->new_entry, 'tei entry patched2');
     }
 
+    public function testSubmitPatchUpdate()
+    {
+        $this->createTeiTableEntryWithIndex('tei entry', ['â key word']);
+        $dictLib = resolve('App\Library\Services\Dict');
+        $patchId = $dictLib->submitPatch($this->dict, $keywords = ['â key word'], $userId = 1,  $groupId = md5('tei entry'),
+                              $newEntry = 'tei entry patched2',  $comment = '',  $flags = '',  $approved = false,  $mergedIntoTei = true);
+
+        $dictLib->submitPatchUpdate($this->dict, $patchId, $approved = true, $mergedIntoTei = false, $flags = "a flag");
+
+        $result = json_decode($dictLib->lookup('â key word', $this->dict));
+        //print_r($result);
+        $this->assertEquals($result[0]->approved, true);
+        $this->assertEquals($result[0]->merged_into_tei, false);
+        $this->assertEquals($result[0]->flags, 'a flag');
+    }
+
     public function testLookupPatchGroup()
     {
         $this->createTeiTableEntryWithIndex('tei entry', ['â key word']);

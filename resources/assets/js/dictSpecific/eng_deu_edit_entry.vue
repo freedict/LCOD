@@ -47,12 +47,13 @@
 <script>
 
  import * as parser from './eng_deu_parse.js';
+ import { mapState } from 'vuex';
 
 export default {
      props: ['entry'],
 
      data() {
-         return { groupId: "foo", parsedEntry: "" , showEditEntryBox: false}; },
+         return { groupId: "foo", parsedEntry: "" }; },
 
      created() {
          this.parsedEntry = parser.parse(this.entry);
@@ -79,14 +80,19 @@ export default {
          },
 
          setShowEditEntryBox(boolean) {
-             this.showEditEntryBox = boolean;
+             this.$store.commit('setShowEditEntryBox', boolean);
          },
 
          cancelEditEntry() {
              this.parsedEntry = parser.parse(this.entry);
-             this.showEditEntryBox = false;
+             this.$store.commit('setShowEditEntryBox', false);
          },
-     }
+     },
+
+     computed: mapState([
+         'showEditEntryBox'
+     ]),
+
  }
 </script>
 <style>

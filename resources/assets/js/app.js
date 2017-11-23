@@ -27,7 +27,10 @@ const store = new Vuex.Store({
         searchTerm: "",
         groupId: "",
         newEntry: [],
-        didALookup: false
+        didALookup: false,
+        showEditEntryBox: false,
+        userName: "",
+        userRole: ""
     },
     mutations: {
         setSelectedDict (state, dict) {
@@ -50,10 +53,18 @@ const store = new Vuex.Store({
         },
         setDidALookup(state, data) {
             state.didALookup = data;
+        },
+        setShowEditEntryBox(state, data) {
+            state.showEditEntryBox = data;
+        },
+        setUserName(state, data) {
+            state.userName = data;
+        },
+        setUserRole(state, data) {
+            state.userRole = data;
         }
     }
 });
-
 // vue
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -76,3 +87,4 @@ const app = new Vue({
     store,
     el: '#app'
 });
+window.store = store;

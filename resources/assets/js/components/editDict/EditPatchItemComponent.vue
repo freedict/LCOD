@@ -1,34 +1,53 @@
 <template>
     <div class="edit_patch_item">
         <component v-bind:is="editEntryComponent" :entry="oldEntry"></component>
+        <br>
         <table>
-            <!-- <tr><td>Edit Headwords:</td><td><textarea v-model="headwordsTextarea"></textarea></td><td rowspan="2"><entry :entry="newEntry" :dict="dict"></entry></td></tr>
-                 <tr><td>Edit Sense:</td><td><textarea v-model="senseTextarea"></textarea></td></tr> -->
+            <div v-if="showEditFlagsBox">
+                <fieldset >
+                    <legend>Edit Flags</legend>
+                    <div v-if="userRole == 'admin'">
+                        <tr><td>Approved:</td><td><input type="checkbox" v-model="approvedCheckbox"></input></td></tr>
+                        <tr><td>Merged in Upstream</td><td><input type="checkbox" v-model="mergedIntoTeiCheckbox"></input></td></tr>
+                    </div>
+                    <tr><td>Flags:</td><td><input v-model="flagsInput"></input></td></tr>
+                    <a @click.preventDefault="cancelEditFlags()">Cancel</a>
+                </fieldset>
+            </div>
+            <div v-else>
+                <a @click.prevent="setShowEditFlags(true)">Edit Flags</a>
+            </div>
+            <br>
             <tr><td>Comment:</td><td><textarea v-model="commentTextarea"></textarea></td></tr>
-            <tr><td>Edit Flags:</td><td><input v-model="flagsInput"></input></td></tr>
-            <tr><td>Set Approved:</td><td><input type="checkbox" v-model="approvedCheckbox"></input></td></tr>
-            <tr><td>Set Merged in Upstream</td><td><input type="checkbox" v-model="mergedIntoTeiCheckbox"></input></td></tr>
-            <a href="" @click.prevent="submitPatch">Submit Patch</a>
+            <a v-if="!showEditFlagsBox && !showEditEntryBox" @click.prevent="submitPatch">Submit Comment</a>
+            <a v-else @click.prevent="submitPatch">Submit Patch</a>
         </table>
     </div>
 </template>
 
 <script>
+
  import { mapState } from 'vuex';
 
  export default {
      props: ['previousItem'],
 
      data() {
-         return { editEntryComponent: "", oldEntry: "", commentTextarea: "", flagsInput: "", approvedCheckbox: "", mergedIntoTeiCheckbox: "", dict: "", groupId: "foo"}; },
+         return { showEditFlagsBox: false, editEntryComponent: "", oldEntry: "", commentTextarea: "", flagsInput: "", approvedCheckbox: "", mergedIntoTeiCheckbox: "", dict: "", groupId: "foo"}; },
 
      methods: {
 
          submitPatch() {
-             if (!$("#loggedIn").length) {
-                 window.alert("You have to be logged in to submit patches!");
+             if (!this.$store.state.userName) {
+                 window.alert("You have to be logged in to submit patches or comments!");
                  return
              }
+
+             if (!this.showEditEntryBox && !this.showEditFlagsBox && this.commentTextarea == "") {
+                 window.alert("Your comment is empty!");
+                 return
+             }
+
 
              var data = {
                  dict:this.dict,
@@ -45,6 +64,22 @@
              ).then(function (response) {
                  location.reload();
              });
+         },
+
+         setShowEditFlags(boolean) {
+             this.showEditFlagsBox = boolean;
+         },
+
+         cancelEditFlags() {
+             if (this.previousItem.hasOwnProperty('flags')) {
+                 this.flagsInput = this.previousItem.flags;
+             }
+             else {
+                 this.flagsInput = "";
+             }
+             this.mergedIntoTeiCheckbox = false;
+             this.approvedCheckbox = false;
+             this.showEditFlagsBox = false;
          }
      },
 
@@ -65,7 +100,9 @@
 
      computed: mapState([
          'newEntry',
-         'newEntryKeywords'
+         'newEntryKeywords',
+         'showEditEntryBox',
+         'userRole'
      ])
  }
 </script>
