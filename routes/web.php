@@ -33,30 +33,33 @@ Route::post('/submitPatch/', function (Request $request) {
     $dictLib = resolve('App\Library\Services\Dict');
     $input = $request->all();
     $input = array_map(function ($value) { return ($value != null) ? $value : ""; }, $input);
-
+    $approved = $input['approved'] ? true: false;
+    $mergedIntoTei = $input['mergedIntoTei'] ? true: false;
+    Log::Info($input);
     $dictLib->validateGroupIdAndDict($input['dict'], $input['groupId']);
 
     if ($input['approved'] && User::findOrFail(Auth::id())->role != "admin"){
         abort(400, "You have to be admin for this operation.");
     }
 
-    $dictLib->submitPatch($input['dict'], $input['keywords'], Auth::id(),
-                          $input['groupId'], $input['newEntry'],
-                          $input['comment'], $input['flags'],
-                          $input['approved'], $input['mergedIntoTei']);
+    $dictLib->submitPatch($input['dict'], Auth::id(), $input['groupId'],
+                          array('comment' => $input['comment'], 'newFlags' => $input['newFlags'],
+                                'approved'=> $approved, 'mergedIntoTei' => $mergedIntoTei,
+                                'newEntry' => $input['newEntry']));
 })->middleware('auth');
 
 Route::post('/submitPatchUpdate/', function (Request $request) {
     $dictLib = resolve('App\Library\Services\Dict');
     $input = $request->all();
     $input = array_map(function ($value) { return ($value != null) ? $value : ""; }, $input);
+    $approved = $input['approved'] ? true: false;
+    $mergedIntoTei = $input['mergedIntoTei'] ? true: false;
 
     $dictLib->validateDict($input['dict']);
-
     if (User::findOrFail(Auth::id())->role != "admin"){
         abort(400, "You have to be admin for this operation.");
     }
 
     $dictLib->submitPatchUpdate($input['dict'], $input['patchId'],
-                                $input['approved'], $input['mergedIntoTei'], $input['flags']);
+                                $approved, $mergedIntoTei);
 })->middleware('auth');

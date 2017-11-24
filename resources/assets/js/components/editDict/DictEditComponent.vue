@@ -1,6 +1,6 @@
 <template>
     <div class="dict-edit">
-        <edit-patch-item v-bind:previous-item="lookupPatchGroupResult[0]"></edit-patch-item>
+        <edit-actual-patch-item v-bind:previous-item="lookupPatchGroupResult[0]"></edit-actual-patch-item>
         <div v-if="lookupPatchGroupResult.slice(0,-1).length > 0">
             <h1 >Entry History</h1>
             <div v-for="patchItem in lookupPatchGroupResult.slice(0,-1)">

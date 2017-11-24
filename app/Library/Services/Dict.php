@@ -161,13 +161,13 @@ ORDER BY $patchesTable.group_id, $patchesTable.id DESC;
         // Lookup the newest patches matching keyword, which are approved and
         // not merged into tei and in addtion return only one patch per
         // group.
-                $sqlCmd = "
+        $sqlCmd = "
 SELECT DISTINCT ON ($patchesTable.group_id) * , '$dict' as dict
 FROM $patchesTable
 JOIN  $patchesTableIndex ON $patchesTableIndex.patch_id = $patchesTable.id
 WHERE $patchesTableIndex.keyword = ?
+AND $patchesTable.merged_into_tei = false
 AND $patchesTable.approved = true
-AND $patchesTable.merged_into_tei= false
 ORDER BY $patchesTable.group_id, $patchesTable.id DESC;
 ";
         $patchesLookupResult = DB::select($sqlCmd, [$keyword]);
@@ -181,33 +181,47 @@ ORDER BY $patchesTable.group_id, $patchesTable.id DESC;
                          ->whereNotIn($teiTable.'.entry_hash', $groupIdsOfPatches)
                          ->get()
                          ->toArray();
+
         $result = array_merge($patchesLookupResult, $teiLookupResult);
         return json_encode($result, JSON_UNESCAPED_UNICODE);
     }
 
-    public function submitPatch(string $dict, array $keywords, int $userId, string $groupId, string $newEntry, string $comment, string $flags, bool $approved, bool $mergedIntoTei)
+    public function submitPatch($dict, int $userId, string $groupId, $optArgs = array())
+        // string $dict, array $keywords, int $userId, string $groupId, string $newEntry, string $comment, string $newFlags, bool $newApproved, bool $newMergedIntoTei)
     {
+        $newEntry = !isset($optArgs['newEntry']) ? '' : $optArgs['newEntry'];
+        $comment = !isset($optArgs['comment']) ? '' : $optArgs['comment'];
+        $newFlags = !isset($optArgs['newFlags']) ? '' : $optArgs['newFlags'];
+        $approved = !isset($optArgs['approved']) ? false : $optArgs['approved'];
+        $mergedIntoTei = !isset($optArgs['mergedIntoTei']) ? false : $optArgs['mergedIntoTei'];
+        $keywords= !isset($optArgs['keywords']) ? [] : $optArgs['keywords'];
+
+        Log::Info($optArgs);
+
         $patchesTable = 'patches_'.$dict;
         $patchesTableIndex = $patchesTable.'_index';
         $teiTable = 'tei_'.$dict;
 
         // calculate oldEntry
-        $lastPatchNewEntry = DB::select("SELECT new_entry FROM $patchesTable WHERE group_id=? ORDER BY id DESC LIMIT 1;", [$groupId]);
-        if (sizeof($lastPatchNewEntry) > 0)
+        $lastPatchNewEntry = DB::select("SELECT * FROM $patchesTable WHERE group_id=? ORDER BY id DESC LIMIT 1;", [$groupId]);
+        if (sizeof($lastPatchNewEntry) > 0) {
             $oldEntry = $lastPatchNewEntry[0]->new_entry;
+            $oldFlags = $lastPatchNewEntry[0]->new_flags;
+        }
         else {
             $oldEntry = DB::select("SELECT entry FROM $teiTable WHERE entry_hash=?;", [$groupId])[0]->entry;
+            $oldFlags =  "";
         }
-
         // insert patch
         $sqlCmd = "
-INSERT INTO $patchesTable (user_id, group_id, old_entry, new_entry, comment, flags, approved, merged_into_tei)
-VALUES (:user_id, :group_id, :old_entry, :new_entry, :comment, :flags, :approved, :merged_into_tei)
+INSERT INTO $patchesTable (user_id, group_id, old_entry, new_entry, comment, old_flags, new_flags, approved, merged_into_tei)
+VALUES (:user_id, :group_id, :old_entry, :new_entry, :comment, :old_flags, :new_flags, :approved, :merged_into_tei)
 RETURNING id;
 ";
-        $strMap = ['user_id' => $userId, 'group_id' => $groupId, 'old_entry' => $oldEntry, 'new_entry' => $newEntry, 'comment' => $comment, 'flags' => $flags, 'approved' => $approved, 'merged_into_tei' => $mergedIntoTei];
+        $strMap = ['user_id' => $userId, 'group_id' => $groupId, 'old_entry' => $oldEntry,
+                   'new_entry' => $newEntry, 'comment' => $comment, 'old_flags' => $oldFlags,
+                   'new_flags' => $newFlags, 'approved' => $approved, 'merged_into_tei' => $mergedIntoTei];
         $patchId = DB::select($sqlCmd, $strMap)[0]->id;
-
         // insert patch index
         foreach ($keywords as $keyword) {
             $sqlCmd = "INSERT INTO $patchesTableIndex VALUES (:keyword, unaccent( :keyword_ ), :patchId)";
@@ -216,7 +230,7 @@ RETURNING id;
         return $patchId;
     }
 
-    public function submitPatchUpdate(string $dict, int $patchId, bool $approved, bool $mergedIntoTei, string $flags)
+    public function submitPatchUpdate(string $dict, int $patchId, bool $approved, bool $mergedIntoTei)
     {
         $patchesTable = 'patches_'.$dict;
         $patchesTableIndex = $patchesTable.'_index';
@@ -225,7 +239,7 @@ RETURNING id;
         // insert patch
         DB::table($patchesTable)
             ->where('id', $patchId)
-            ->update(['approved' => $approved, 'merged_into_tei' => $mergedIntoTei, 'flags' => $flags]);
+            ->update(['approved' => $approved, 'merged_into_tei' => $mergedIntoTei]);
     }
 
     public function lookupPatchGroup(string $dict, string $groupId)

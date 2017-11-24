@@ -56,8 +56,9 @@ user\_id
 group\_id           
 old\_entry          
 new\_entry          
-comment            
-flags              
+comment             
+old\_flags          
+new\_flags          
 approved           
 merged\_into\_tei    
 creation\_date      

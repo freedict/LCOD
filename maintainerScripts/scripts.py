@@ -68,7 +68,7 @@ def teis2sqls():
     for tei in tei_lst:
         dict=tei.replace(".tei", "").replace("-", "_")
         sql+="CREATE TABLE patches_"+dict+""" (id SERIAL PRIMARY KEY, user_id INTEGER, group_id TEXT, old_entry TEXT, new_entry TEXT,
-comment TEXT, flags TEXT, approved BOOLEAN, merged_into_tei BOOLEAN, creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP);\n"""
+comment TEXT, old_flags TEXT, new_flags TEXT, approved BOOLEAN, merged_into_tei BOOLEAN, creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP);\n"""
         sql+="CREATE TABLE patches_"+dict+"_index (keyword TEXT, keyword_unaccent TEXT, patch_id INTEGER);\n"
         sql+="CREATE INDEX patches_"+dict+"_index_of_ids ON patches_"+dict+" (id);\n"
         sql+="CREATE INDEX patches_"+dict+"_index_of_keywords ON patches_"+dict+"_index (keyword);\n"

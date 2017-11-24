@@ -26,7 +26,7 @@ const store = new Vuex.Store({
         lookupPatchGroupResult: [],
         searchTerm: "",
         groupId: "",
-        newEntry: [],
+        newEntry: "",
         didALookup: false,
         showEditEntryBox: false,
         userName: "",
@@ -78,7 +78,7 @@ Vue.component('dict-read', require('./components/readDict/DictReadComponent.vue'
 
 Vue.component('patch-item', require('./components/editDict/PatchItemComponent.vue'));
 Vue.component('dict-edit', require('./components/editDict/DictEditComponent.vue'));
-Vue.component('edit-patch-item', require('./components/editDict/EditPatchItemComponent.vue'));
+Vue.component('edit-actual-patch-item', require('./components/editDict/EditActualPatchItemComponent.vue'));
 
 Vue.component('eng-deu-edit-entry', require('./dictSpecific/eng_deu_edit_entry.vue'));
 Vue.component('eng-deu-show-entry', require('./dictSpecific/eng_deu_show_entry.vue'));

@@ -10635,115 +10635,6 @@ return jQuery;
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports) {
-
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file.
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
-
-
-/***/ }),
-/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -11685,6 +11576,115 @@ var index_esm = {
 
 
 /* harmony default export */ __webpack_exports__["a"] = (index_esm);
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
 
 
 /***/ }),
@@ -14345,7 +14345,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_jquery___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_jquery__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_jquery_ui_ui_widgets_autocomplete_js__ = __webpack_require__(44);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_jquery_ui_ui_widgets_autocomplete_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_jquery_ui_ui_widgets_autocomplete_js__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vuex__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vuex__ = __webpack_require__(2);
 
 /**
  * First we will load all of this project's JavaScript dependencies which
@@ -14374,7 +14374,7 @@ var store = new __WEBPACK_IMPORTED_MODULE_2_vuex__["a" /* default */].Store({
         lookupPatchGroupResult: [],
         searchTerm: "",
         groupId: "",
-        newEntry: [],
+        newEntry: "",
         didALookup: false,
         showEditEntryBox: false,
         userName: "",
@@ -14426,7 +14426,7 @@ Vue.component('dict-read', __webpack_require__(59));
 
 Vue.component('patch-item', __webpack_require__(61));
 Vue.component('dict-edit', __webpack_require__(64));
-Vue.component('edit-patch-item', __webpack_require__(67));
+Vue.component('edit-actual-patch-item', __webpack_require__(125));
 
 Vue.component('eng-deu-edit-entry', __webpack_require__(70));
 Vue.component('eng-deu-show-entry', __webpack_require__(79));
@@ -47101,7 +47101,7 @@ exports.clearImmediate = clearImmediate;
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(3)
 /* script */
 var __vue_script__ = __webpack_require__(51)
 /* template */
@@ -47150,7 +47150,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(2);
 //
 //
 //
@@ -47300,7 +47300,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(3)
 /* script */
 var __vue_script__ = __webpack_require__(54)
 /* template */
@@ -47349,7 +47349,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(2);
 //
 //
 //
@@ -47500,7 +47500,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(3)
 /* script */
 var __vue_script__ = __webpack_require__(57)
 /* template */
@@ -47549,7 +47549,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(2);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 //
@@ -47640,7 +47640,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(3)
 /* script */
 var __vue_script__ = null
 /* template */
@@ -47719,7 +47719,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(3)
 /* script */
 var __vue_script__ = __webpack_require__(62)
 /* template */
@@ -47768,7 +47768,13 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(2);
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -47816,7 +47822,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     props: ["item"],
 
     data: function data() {
-        return { commentOnly: false, showEntryComponent: "", oldValApproved: "", oldValMergedIntoTei: "", oldValFlags: "" };
+        return { commentOnly: false, showEntryComponent: "", oldValApproved: "", oldValMergedIntoTei: "", oldValFlags: "", uselessPatchItem: false, showEditPatch: false };
     },
 
 
@@ -47825,13 +47831,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var data = {
                 dict: this.selectedDict,
                 patchId: this.item.id,
-                flags: this.item.flags,
                 approved: this.item.approved,
                 mergedIntoTei: this.item.merged_into_tei
             };
             axios.post('/submitPatchUpdate/', data).then(function (response) {
                 location.reload();
             });
+        },
+        setShowEditPatch: function setShowEditPatch(boolean) {
+            this.showEditPatch = boolean;
+        },
+        cancelShowEditPatch: function cancelShowEditPatch() {
+            this.showEditPatch = false;
+            this.item.approved = this.oldValApproved;
+            this.item.merged_into_tei = this.oldValMergedIntoTei;
         }
     },
 
@@ -47840,7 +47853,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         this.oldValApproved = this.item.approved;
         this.oldValMergedIntoTei = this.item.merged_into_tei;
         this.oldValFlags = this.item.flags;
-        if (!this.item.approved && !this.item.merged_into_tei && !this.item.flags) this.commentOnly = true;
+        if (this.item.old_entry == this.item.new_entry && this.item.old_flags == this.item.new_flags && !this.item.approved && !this.item.merged_into_tei) this.commentOnly = true;
+        if (this.commentOnly && this.item.comment == "") this.uselessPatchItem = true;
     },
 
 
@@ -47857,289 +47871,253 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "patch-item" }, [
-    _c("table", { attrs: { border: "1" } }, [
-      _vm.item.new_entry != _vm.item.old_entry
-        ? _c("tr", [
-            _c("td", [_vm._v("Patch ID:")]),
-            _c("td", [_c("b", [_vm._v(_vm._s(_vm.item.id))])])
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.item.user_name
-        ? _c("tr", [
-            _c("td", [_vm._v("By user:")]),
-            _c("td", [_vm._v(_vm._s(_vm.item.user_name))])
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.item.new_entry != _vm.item.old_entry
-        ? _c("tr", [
-            _c("td", [_vm._v("New Entry:")]),
-            _c(
-              "td",
-              [
-                _c(_vm.showEntryComponent, {
-                  tag: "component",
-                  attrs: { entry: _vm.item.new_entry }
-                })
-              ],
-              1
-            )
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.item.new_entry != _vm.item.old_entry
-        ? _c("tr", [
-            _c("td", [_vm._v("Old Entry:")]),
-            _c(
-              "td",
-              [
-                _c(_vm.showEntryComponent, {
-                  tag: "component",
-                  attrs: { entry: _vm.item.old_entry }
-                })
-              ],
-              1
-            )
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.item.comment
-        ? _c("tr", [
-            _c("td", [_vm._v("Comment:")]),
-            _c("td", [_vm._v(_vm._s(_vm.item.comment))])
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      !_vm.commentOnly && (_vm.item.flags || _vm.userRole == "admin")
-        ? _c("tr", [
-            _c("td", [_vm._v("Flags:")]),
+    !_vm.uselessPatchItem
+      ? _c("span", [
+          _c("table", { attrs: { border: "1" } }, [
+            _vm.item.creation_date
+              ? _c("tr", [
+                  _c("td", [_vm._v("Date:")]),
+                  _c("td", [_vm._v(_vm._s(_vm.item.creation_date))])
+                ])
+              : _vm._e(),
             _vm._v(" "),
-            _vm.userRole == "admin"
-              ? _c("td", [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.item.flags,
-                        expression: "item.flags"
-                      }
-                    ],
-                    attrs: { type: "text" },
-                    domProps: { value: _vm.item.flags },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(_vm.item, "flags", $event.target.value)
-                      }
-                    }
-                  })
+            _vm.item.user_name
+              ? _c("tr", [
+                  _c("td", [_vm._v("By user:")]),
+                  _c("td", [_vm._v(_vm._s(_vm.item.user_name))])
                 ])
-              : _c("td", [_vm._v(_vm._s(_vm.item.flags) + ">")])
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      !_vm.commentOnly && (_vm.item.approved || _vm.userRole == "admin")
-        ? _c("tr", [
-            _c("td", [_vm._v("Approved:")]),
+              : _vm._e(),
             _vm._v(" "),
-            _vm.userRole == "admin"
-              ? _c("td", [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.item.approved,
-                        expression: "item.approved"
-                      }
+            _vm.item.new_entry != _vm.item.old_entry
+              ? _c("tr", [
+                  _c("td", [_vm._v("Changed Entry:")]),
+                  _vm._v(" "),
+                  _c(
+                    "td",
+                    [
+                      _c(_vm.showEntryComponent, {
+                        tag: "component",
+                        attrs: { entry: _vm.item.new_entry }
+                      }),
+                      _c("br"),
+                      _vm._v(" "),
+                      _c(_vm.showEntryComponent, {
+                        tag: "component",
+                        attrs: { entry: _vm.item.old_entry }
+                      })
                     ],
-                    attrs: { type: "checkbox" },
-                    domProps: {
-                      checked: Array.isArray(_vm.item.approved)
-                        ? _vm._i(_vm.item.approved, null) > -1
-                        : _vm.item.approved
-                    },
-                    on: {
-                      change: function($event) {
-                        var $$a = _vm.item.approved,
-                          $$el = $event.target,
-                          $$c = $$el.checked ? true : false
-                        if (Array.isArray($$a)) {
-                          var $$v = null,
-                            $$i = _vm._i($$a, $$v)
-                          if ($$el.checked) {
-                            $$i < 0 && (_vm.item.approved = $$a.concat([$$v]))
-                          } else {
-                            $$i > -1 &&
-                              (_vm.item.approved = $$a
-                                .slice(0, $$i)
-                                .concat($$a.slice($$i + 1)))
-                          }
-                        } else {
-                          _vm.$set(_vm.item, "approved", $$c)
-                        }
-                      }
-                    }
-                  })
+                    1
+                  )
                 ])
-              : _c("td", [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.item.approved,
-                        expression: "item.approved"
-                      }
-                    ],
-                    attrs: { type: "checkbox", onclick: "return false;" },
-                    domProps: {
-                      checked: Array.isArray(_vm.item.approved)
-                        ? _vm._i(_vm.item.approved, null) > -1
-                        : _vm.item.approved
-                    },
-                    on: {
-                      change: function($event) {
-                        var $$a = _vm.item.approved,
-                          $$el = $event.target,
-                          $$c = $$el.checked ? true : false
-                        if (Array.isArray($$a)) {
-                          var $$v = null,
-                            $$i = _vm._i($$a, $$v)
-                          if ($$el.checked) {
-                            $$i < 0 && (_vm.item.approved = $$a.concat([$$v]))
-                          } else {
-                            $$i > -1 &&
-                              (_vm.item.approved = $$a
-                                .slice(0, $$i)
-                                .concat($$a.slice($$i + 1)))
-                          }
-                        } else {
-                          _vm.$set(_vm.item, "approved", $$c)
-                        }
-                      }
-                    }
-                  })
-                ])
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      !_vm.commentOnly && (_vm.item.merged_into_tei || _vm.userRole == "admin")
-        ? _c("tr", [
-            _c("td", [_vm._v("Merged into upstream:")]),
+              : _vm._e(),
             _vm._v(" "),
-            _vm.userRole == "admin"
-              ? _c("td", [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.item.merged_into_tei,
-                        expression: "item.merged_into_tei"
-                      }
+            _vm.item.approved && _vm.item.old_entry == _vm.item.new_entry
+              ? _c("tr", [
+                  _c("td", [_vm._v("Entry")]),
+                  _c(
+                    "td",
+                    [
+                      _c(_vm.showEntryComponent, {
+                        tag: "component",
+                        attrs: { entry: _vm.item.new_entry }
+                      })
                     ],
-                    attrs: { type: "checkbox" },
-                    domProps: {
-                      checked: Array.isArray(_vm.item.merged_into_tei)
-                        ? _vm._i(_vm.item.merged_into_tei, null) > -1
-                        : _vm.item.merged_into_tei
-                    },
-                    on: {
-                      change: function($event) {
-                        var $$a = _vm.item.merged_into_tei,
-                          $$el = $event.target,
-                          $$c = $$el.checked ? true : false
-                        if (Array.isArray($$a)) {
-                          var $$v = null,
-                            $$i = _vm._i($$a, $$v)
-                          if ($$el.checked) {
-                            $$i < 0 &&
-                              (_vm.item.merged_into_tei = $$a.concat([$$v]))
-                          } else {
-                            $$i > -1 &&
-                              (_vm.item.merged_into_tei = $$a
-                                .slice(0, $$i)
-                                .concat($$a.slice($$i + 1)))
-                          }
-                        } else {
-                          _vm.$set(_vm.item, "merged_into_tei", $$c)
-                        }
-                      }
-                    }
-                  })
+                    1
+                  )
                 ])
-              : _c("td", [
-                  _c("input", {
-                    directives: [
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.item.approved && _vm.item.old_flags == _vm.item.new_flags
+              ? _c("tr", [
+                  _c("td", [_vm._v("Flags")]),
+                  _c("td", [_vm._v(_vm._s(_vm.item.new_flags))])
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.item.new_flags != _vm.item.old_flags
+              ? _c("tr", [
+                  _c("td", [_vm._v("Changed Flags:")]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _vm._v(_vm._s(_vm.item.new_flags)),
+                    _c("br"),
+                    _vm._v(
+                      "\n                    " + _vm._s(_vm.item.old_flags)
+                    )
+                  ])
+                ])
+              : _vm._e(),
+            _vm.item.comment
+              ? _c("tr", [
+                  _c("td", [_vm._v("Comment:")]),
+                  _c("td", [_vm._v(_vm._s(_vm.item.comment))])
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.item.approved
+              ? _c("tr", [
+                  _c("td", [_vm._v("Set Approved")]),
+                  _c("td", [_vm._v("yes")])
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.item.merged_into_tei
+              ? _c("tr", [
+                  _c("td", [_vm._v("Merged into upstream")]),
+                  _c("td", [_vm._v("yes")])
+                ])
+              : _vm._e()
+          ]),
+          _vm._v(" "),
+          !_vm.commentOnly && _vm.userRole == "admin"
+            ? _c("div", [
+                _vm.showEditPatch
+                  ? _c("div", [
+                      _c("fieldset", [
+                        _c("legend", [_vm._v("Edit Patch")]),
+                        _vm._v(" "),
+                        _c("p", [
+                          _vm._v("Set Approved: "),
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.item.approved,
+                                expression: "item.approved"
+                              }
+                            ],
+                            attrs: { type: "checkbox" },
+                            domProps: {
+                              checked: Array.isArray(_vm.item.approved)
+                                ? _vm._i(_vm.item.approved, null) > -1
+                                : _vm.item.approved
+                            },
+                            on: {
+                              change: function($event) {
+                                var $$a = _vm.item.approved,
+                                  $$el = $event.target,
+                                  $$c = $$el.checked ? true : false
+                                if (Array.isArray($$a)) {
+                                  var $$v = null,
+                                    $$i = _vm._i($$a, $$v)
+                                  if ($$el.checked) {
+                                    $$i < 0 &&
+                                      (_vm.item.approved = $$a.concat([$$v]))
+                                  } else {
+                                    $$i > -1 &&
+                                      (_vm.item.approved = $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1)))
+                                  }
+                                } else {
+                                  _vm.$set(_vm.item, "approved", $$c)
+                                }
+                              }
+                            }
+                          })
+                        ]),
+                        _vm._v(" "),
+                        _c("p", [
+                          _vm._v("Merged into upstream: "),
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.item.merged_into_tei,
+                                expression: "item.merged_into_tei"
+                              }
+                            ],
+                            attrs: { type: "checkbox" },
+                            domProps: {
+                              checked: Array.isArray(_vm.item.merged_into_tei)
+                                ? _vm._i(_vm.item.merged_into_tei, null) > -1
+                                : _vm.item.merged_into_tei
+                            },
+                            on: {
+                              change: function($event) {
+                                var $$a = _vm.item.merged_into_tei,
+                                  $$el = $event.target,
+                                  $$c = $$el.checked ? true : false
+                                if (Array.isArray($$a)) {
+                                  var $$v = null,
+                                    $$i = _vm._i($$a, $$v)
+                                  if ($$el.checked) {
+                                    $$i < 0 &&
+                                      (_vm.item.merged_into_tei = $$a.concat([
+                                        $$v
+                                      ]))
+                                  } else {
+                                    $$i > -1 &&
+                                      (_vm.item.merged_into_tei = $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1)))
+                                  }
+                                } else {
+                                  _vm.$set(_vm.item, "merged_into_tei", $$c)
+                                }
+                              }
+                            }
+                          })
+                        ]),
+                        _vm._v(" "),
+                        _vm.item.merged_into_tei != this.oldValMergedIntoTei ||
+                        _vm.item.approved != this.oldValApproved
+                          ? _c("div", [
+                              _c(
+                                "a",
+                                {
+                                  on: {
+                                    click: function($event) {
+                                      if (
+                                        !("button" in $event) &&
+                                        _vm._k(
+                                          $event.keyCode,
+                                          "preven",
+                                          undefined,
+                                          $event.key
+                                        )
+                                      ) {
+                                        return null
+                                      }
+                                      _vm.updatePatch($event)
+                                    }
+                                  }
+                                },
+                                [_vm._v("update patch")]
+                              )
+                            ])
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _c(
+                          "a",
+                          {
+                            on: {
+                              click: function($event) {
+                                _vm.cancelShowEditPatch()
+                              }
+                            }
+                          },
+                          [_vm._v("Cancel")]
+                        )
+                      ])
+                    ])
+                  : _c(
+                      "a",
                       {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.item.merged_into_tei,
-                        expression: "item.merged_into_tei"
-                      }
-                    ],
-                    attrs: { type: "checkbox", onclick: "return false;" },
-                    domProps: {
-                      checked: Array.isArray(_vm.item.merged_into_tei)
-                        ? _vm._i(_vm.item.merged_into_tei, null) > -1
-                        : _vm.item.merged_into_tei
-                    },
-                    on: {
-                      change: function($event) {
-                        var $$a = _vm.item.merged_into_tei,
-                          $$el = $event.target,
-                          $$c = $$el.checked ? true : false
-                        if (Array.isArray($$a)) {
-                          var $$v = null,
-                            $$i = _vm._i($$a, $$v)
-                          if ($$el.checked) {
-                            $$i < 0 &&
-                              (_vm.item.merged_into_tei = $$a.concat([$$v]))
-                          } else {
-                            $$i > -1 &&
-                              (_vm.item.merged_into_tei = $$a
-                                .slice(0, $$i)
-                                .concat($$a.slice($$i + 1)))
+                        on: {
+                          click: function($event) {
+                            _vm.setShowEditPatch(true)
                           }
-                        } else {
-                          _vm.$set(_vm.item, "merged_into_tei", $$c)
                         }
-                      }
-                    }
-                  })
-                ])
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.item.merged_into_tei != this.oldValMergedIntoTei ||
-      _vm.item.approved != this.oldValApproved ||
-      _vm.item.flags != _vm.oldValFlags
-        ? _c("div", [
-            _c(
-              "a",
-              {
-                on: {
-                  click: function($event) {
-                    if (
-                      !("button" in $event) &&
-                      _vm._k($event.keyCode, "preven", undefined, $event.key)
-                    ) {
-                      return null
-                    }
-                    _vm.updatePatch($event)
-                  }
-                }
-              },
-              [_vm._v("update patch")]
-            )
-          ])
-        : _vm._e()
-    ])
+                      },
+                      [_vm._v("Edit Patch")]
+                    )
+              ])
+            : _vm._e()
+        ])
+      : _vm._e()
   ])
 }
 var staticRenderFns = []
@@ -48157,7 +48135,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(3)
 /* script */
 var __vue_script__ = __webpack_require__(65)
 /* template */
@@ -48206,7 +48184,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(2);
 //
 //
 //
@@ -48258,7 +48236,7 @@ var render = function() {
     "div",
     { staticClass: "dict-edit" },
     [
-      _c("edit-patch-item", {
+      _c("edit-actual-patch-item", {
         attrs: { "previous-item": _vm.lookupPatchGroupResult[0] }
       }),
       _vm._v(" "),
@@ -48300,408 +48278,9 @@ if (false) {
 }
 
 /***/ }),
-/* 67 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(2)
-/* script */
-var __vue_script__ = __webpack_require__(68)
-/* template */
-var __vue_template__ = __webpack_require__(69)
-/* template functional */
-  var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/editDict/EditPatchItemComponent.vue"
-if (Component.esModule && Object.keys(Component.esModule).some(function (key) {  return key !== "default" && key.substr(0, 2) !== "__"})) {  console.error("named exports are not supported in *.vue files.")}
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-07c10d8b", Component.options)
-  } else {
-    hotAPI.reload("data-v-07c10d8b", Component.options)
-' + '  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 68 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(3);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['previousItem'],
-
-    data: function data() {
-        return { showEditFlagsBox: false, editEntryComponent: "", oldEntry: "", commentTextarea: "", flagsInput: "", approvedCheckbox: "", mergedIntoTeiCheckbox: "", dict: "", groupId: "foo" };
-    },
-
-
-    methods: {
-        submitPatch: function submitPatch() {
-            if (!this.$store.state.userName) {
-                window.alert("You have to be logged in to submit patches or comments!");
-                return;
-            }
-
-            if (!this.showEditEntryBox && !this.showEditFlagsBox && this.commentTextarea == "") {
-                window.alert("Your comment is empty!");
-                return;
-            }
-
-            var data = {
-                dict: this.dict,
-                groupId: this.groupId,
-                newEntry: this.newEntry,
-                comment: this.commentTextarea,
-                flags: this.flagsInput,
-                approved: this.approvedCheckbox,
-                mergedIntoTei: this.mergedIntoTeiCheckbox,
-                keywords: this.newEntryKeywords
-            };
-            axios.post('/submitPatch/', data).then(function (response) {
-                location.reload();
-            });
-        },
-        setShowEditFlags: function setShowEditFlags(boolean) {
-            this.showEditFlagsBox = boolean;
-        },
-        cancelEditFlags: function cancelEditFlags() {
-            if (this.previousItem.hasOwnProperty('flags')) {
-                this.flagsInput = this.previousItem.flags;
-            } else {
-                this.flagsInput = "";
-            }
-            this.mergedIntoTeiCheckbox = false;
-            this.approvedCheckbox = false;
-            this.showEditFlagsBox = false;
-        }
-    },
-
-    watch: {
-        previousItem: function previousItem(val, oldval) {
-            this.dict = this.previousItem.dict;
-            if (this.previousItem.hasOwnProperty('entry')) {
-                this.oldEntry = this.previousItem.entry;
-                this.groupId = this.previousItem.entry_hash;
-            } else {
-                this.oldEntry = this.previousItem.new_entry;
-                this.groupId = this.previousItem.group_id;
-            }
-            this.editEntryComponent = this.dict.replace("_", "-") + "-edit-entry";
-        }
-    },
-
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapState */])(['newEntry', 'newEntryKeywords', 'showEditEntryBox', 'userRole'])
-});
-
-/***/ }),
-/* 69 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "edit_patch_item" },
-    [
-      _c(_vm.editEntryComponent, {
-        tag: "component",
-        attrs: { entry: _vm.oldEntry }
-      }),
-      _vm._v(" "),
-      _c("br"),
-      _vm._v(" "),
-      _c("table", [
-        _vm.showEditFlagsBox
-          ? _c("div", [
-              _c("fieldset", [
-                _c("legend", [_vm._v("Edit Flags")]),
-                _vm._v(" "),
-                _vm.userRole == "admin"
-                  ? _c("div", [
-                      _c("tr", [
-                        _c("td", [_vm._v("Approved:")]),
-                        _c("td", [
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.approvedCheckbox,
-                                expression: "approvedCheckbox"
-                              }
-                            ],
-                            attrs: { type: "checkbox" },
-                            domProps: {
-                              checked: Array.isArray(_vm.approvedCheckbox)
-                                ? _vm._i(_vm.approvedCheckbox, null) > -1
-                                : _vm.approvedCheckbox
-                            },
-                            on: {
-                              change: function($event) {
-                                var $$a = _vm.approvedCheckbox,
-                                  $$el = $event.target,
-                                  $$c = $$el.checked ? true : false
-                                if (Array.isArray($$a)) {
-                                  var $$v = null,
-                                    $$i = _vm._i($$a, $$v)
-                                  if ($$el.checked) {
-                                    $$i < 0 &&
-                                      (_vm.approvedCheckbox = $$a.concat([$$v]))
-                                  } else {
-                                    $$i > -1 &&
-                                      (_vm.approvedCheckbox = $$a
-                                        .slice(0, $$i)
-                                        .concat($$a.slice($$i + 1)))
-                                  }
-                                } else {
-                                  _vm.approvedCheckbox = $$c
-                                }
-                              }
-                            }
-                          })
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("tr", [
-                        _c("td", [_vm._v("Merged in Upstream")]),
-                        _c("td", [
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.mergedIntoTeiCheckbox,
-                                expression: "mergedIntoTeiCheckbox"
-                              }
-                            ],
-                            attrs: { type: "checkbox" },
-                            domProps: {
-                              checked: Array.isArray(_vm.mergedIntoTeiCheckbox)
-                                ? _vm._i(_vm.mergedIntoTeiCheckbox, null) > -1
-                                : _vm.mergedIntoTeiCheckbox
-                            },
-                            on: {
-                              change: function($event) {
-                                var $$a = _vm.mergedIntoTeiCheckbox,
-                                  $$el = $event.target,
-                                  $$c = $$el.checked ? true : false
-                                if (Array.isArray($$a)) {
-                                  var $$v = null,
-                                    $$i = _vm._i($$a, $$v)
-                                  if ($$el.checked) {
-                                    $$i < 0 &&
-                                      (_vm.mergedIntoTeiCheckbox = $$a.concat([
-                                        $$v
-                                      ]))
-                                  } else {
-                                    $$i > -1 &&
-                                      (_vm.mergedIntoTeiCheckbox = $$a
-                                        .slice(0, $$i)
-                                        .concat($$a.slice($$i + 1)))
-                                  }
-                                } else {
-                                  _vm.mergedIntoTeiCheckbox = $$c
-                                }
-                              }
-                            }
-                          })
-                        ])
-                      ])
-                    ])
-                  : _vm._e(),
-                _vm._v(" "),
-                _c("tr", [
-                  _c("td", [_vm._v("Flags:")]),
-                  _c("td", [
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.flagsInput,
-                          expression: "flagsInput"
-                        }
-                      ],
-                      domProps: { value: _vm.flagsInput },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.flagsInput = $event.target.value
-                        }
-                      }
-                    })
-                  ])
-                ]),
-                _vm._v(" "),
-                _c(
-                  "a",
-                  {
-                    on: {
-                      click: function($event) {
-                        if (
-                          !("button" in $event) &&
-                          _vm._k(
-                            $event.keyCode,
-                            "preventDefault",
-                            undefined,
-                            $event.key
-                          )
-                        ) {
-                          return null
-                        }
-                        _vm.cancelEditFlags()
-                      }
-                    }
-                  },
-                  [_vm._v("Cancel")]
-                )
-              ])
-            ])
-          : _c("div", [
-              _c(
-                "a",
-                {
-                  on: {
-                    click: function($event) {
-                      $event.preventDefault()
-                      _vm.setShowEditFlags(true)
-                    }
-                  }
-                },
-                [_vm._v("Edit Flags")]
-              )
-            ]),
-        _vm._v(" "),
-        _c("br"),
-        _vm._v(" "),
-        _c("tr", [
-          _c("td", [_vm._v("Comment:")]),
-          _c("td", [
-            _c("textarea", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.commentTextarea,
-                  expression: "commentTextarea"
-                }
-              ],
-              domProps: { value: _vm.commentTextarea },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.commentTextarea = $event.target.value
-                }
-              }
-            })
-          ])
-        ]),
-        _vm._v(" "),
-        !_vm.showEditFlagsBox && !_vm.showEditEntryBox
-          ? _c(
-              "a",
-              {
-                on: {
-                  click: function($event) {
-                    $event.preventDefault()
-                    _vm.submitPatch($event)
-                  }
-                }
-              },
-              [_vm._v("Submit Comment")]
-            )
-          : _c(
-              "a",
-              {
-                on: {
-                  click: function($event) {
-                    $event.preventDefault()
-                    _vm.submitPatch($event)
-                  }
-                }
-              },
-              [_vm._v("Submit Patch")]
-            )
-      ])
-    ],
-    1
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-07c10d8b", module.exports)
-  }
-}
-
-/***/ }),
+/* 67 */,
+/* 68 */,
+/* 69 */,
 /* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -48710,7 +48289,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(71)
 }
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(3)
 /* script */
 var __vue_script__ = __webpack_require__(76)
 /* template */
@@ -49136,7 +48715,7 @@ module.exports = function listToStyles (parentId, list) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__eng_deu_parse_js__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(2);
 //
 //
 //
@@ -49611,7 +49190,7 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(2)
+var normalizeComponent = __webpack_require__(3)
 /* script */
 var __vue_script__ = __webpack_require__(80)
 /* template */
@@ -49660,7 +49239,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__eng_deu_parse_js__ = __webpack_require__(18);
 //
 //
@@ -49718,6 +49297,609 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 84 */,
+/* 85 */,
+/* 86 */,
+/* 87 */,
+/* 88 */,
+/* 89 */,
+/* 90 */,
+/* 91 */,
+/* 92 */,
+/* 93 */,
+/* 94 */,
+/* 95 */,
+/* 96 */,
+/* 97 */,
+/* 98 */,
+/* 99 */,
+/* 100 */,
+/* 101 */,
+/* 102 */,
+/* 103 */,
+/* 104 */,
+/* 105 */,
+/* 106 */,
+/* 107 */,
+/* 108 */,
+/* 109 */,
+/* 110 */,
+/* 111 */,
+/* 112 */,
+/* 113 */,
+/* 114 */,
+/* 115 */,
+/* 116 */,
+/* 117 */,
+/* 118 */,
+/* 119 */,
+/* 120 */,
+/* 121 */,
+/* 122 */,
+/* 123 */,
+/* 124 */,
+/* 125 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(3)
+/* script */
+var __vue_script__ = __webpack_require__(126)
+/* template */
+var __vue_template__ = __webpack_require__(127)
+/* template functional */
+  var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/editDict/EditActualPatchItemComponent.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {  return key !== "default" && key.substr(0, 2) !== "__"})) {  console.error("named exports are not supported in *.vue files.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-3728fbf9", Component.options)
+  } else {
+    hotAPI.reload("data-v-3728fbf9", Component.options)
+' + '  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 126 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(2);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['previousItem'],
+
+    data: function data() {
+        return { entryComponent: "", showEditFlagsBox: false, editEntryComponent: "",
+            oldEntry: "", newComment: "", oldFlags: "", flagsInput: "", oldApproved: false, newApproved: false, oldMergedIntoTei: false, newMergedIntoTei: false, groupId: "" };
+    },
+
+
+    methods: {
+        submitPatch: function submitPatch() {
+            if (!this.$store.state.userName) {
+                window.alert("You have to be logged in to submit patches or comments!");
+                return;
+            }
+            if (!this.showEditEntryBox && !this.showEditFlagsBox && this.newComment == "") {
+                window.alert("Your comment is empty!");
+                return;
+            }
+            if (this.showEditEntryBox && this.oldEntry == this.newEntry) {
+                window.alert("You didn't change the entry!");
+                return;
+            }
+            if (this.showEditFlagsBox && this.oldFlags == this.flagsInput && this.oldApproved == this.newApproved && this.oldMergedIntoTei == this.newMergedIntoTei) {
+                window.alert("You didn't change the flags!");
+                return;
+            }
+
+            var data = {
+                dict: this.selectedDict,
+                groupId: this.groupId,
+                newEntry: this.newEntry,
+                comment: this.newComment,
+                newFlags: this.flagsInput,
+                approved: this.newApproved,
+                mergedIntoTei: this.newMergedIntoTei,
+                keywords: this.newEntryKeywords
+            };
+            axios.post('/submitPatch/', data).then(function (response) {
+                location.reload();
+            });
+        },
+        setShowEditFlags: function setShowEditFlags(boolean) {
+            this.showEditFlagsBox = boolean;
+        },
+        cancelEditFlags: function cancelEditFlags() {
+            if (this.previousItem.hasOwnProperty('new_flags')) {
+                this.flagsInput = this.previousItem.new_flags;
+            } else {
+                this.flagsInput = "";
+            }
+            this.newMergedIntoTei = false;
+            this.newApproved = false;
+            this.showEditFlagsBox = false;
+        }
+    },
+
+    watch: {
+        previousItem: function previousItem(val, oldval) {
+            this.dict = this.previousItem.dict;
+            if (this.previousItem.hasOwnProperty('entry')) {
+                this.oldEntry = this.previousItem.entry;
+                this.groupId = this.previousItem.entry_hash;
+            } else {
+                this.oldEntry = this.previousItem.new_entry;
+                this.groupId = this.previousItem.group_id;
+                this.flagsInput = this.previousItem.new_flags;
+                this.oldFlags = this.previousItem.old_flags;
+                this.oldApproved = this.previousItem.approved;
+                this.meregdIntoTei = this.previousItem.merged_into_tei;
+            }
+            this.editEntryComponent = this.dict.replace("_", "-") + "-edit-entry";
+            this.entryComponent = this.selectedDict.replace("_", "-") + "-show-entry";
+        }
+    },
+
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapState */])(['newEntry', 'newEntryKeywords', 'showEditEntryBox', 'userRole', 'selectedDict'])
+});
+
+/***/ }),
+/* 127 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "edit_patch_item" },
+    [
+      _c("h1", [_vm._v("Actual Entry")]),
+      _vm._v(" "),
+      _c("table", { attrs: { border: "1" } }, [
+        _c("tr", [
+          _c("td", [_vm._v("Entry:")]),
+          _c(
+            "td",
+            [
+              _c(_vm.entryComponent, {
+                tag: "component",
+                attrs: { entry: _vm.newEntry }
+              })
+            ],
+            1
+          )
+        ]),
+        _vm._v(" "),
+        _c("tr", [
+          _c("td", [_vm._v("Flags:")]),
+          _vm._v(" "),
+          _c("td", [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.flagsInput,
+                  expression: "flagsInput"
+                }
+              ],
+              attrs: { type: "text", readonly: "" },
+              domProps: { value: _vm.flagsInput },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.flagsInput = $event.target.value
+                }
+              }
+            })
+          ])
+        ]),
+        _vm._v(" "),
+        _c("tr", [
+          _c("td", [_vm._v("Approved:")]),
+          _vm._v(" "),
+          _c("td", [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.newApproved,
+                  expression: "newApproved"
+                }
+              ],
+              attrs: { type: "checkbox", onclick: "return false;" },
+              domProps: {
+                checked: Array.isArray(_vm.newApproved)
+                  ? _vm._i(_vm.newApproved, null) > -1
+                  : _vm.newApproved
+              },
+              on: {
+                change: function($event) {
+                  var $$a = _vm.newApproved,
+                    $$el = $event.target,
+                    $$c = $$el.checked ? true : false
+                  if (Array.isArray($$a)) {
+                    var $$v = null,
+                      $$i = _vm._i($$a, $$v)
+                    if ($$el.checked) {
+                      $$i < 0 && (_vm.newApproved = $$a.concat([$$v]))
+                    } else {
+                      $$i > -1 &&
+                        (_vm.newApproved = $$a
+                          .slice(0, $$i)
+                          .concat($$a.slice($$i + 1)))
+                    }
+                  } else {
+                    _vm.newApproved = $$c
+                  }
+                }
+              }
+            })
+          ])
+        ]),
+        _vm._v(" "),
+        _c("tr", [
+          _c("td", [_vm._v("Merged into upstream:")]),
+          _vm._v(" "),
+          _c("td", [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.newMergedIntoTei,
+                  expression: "newMergedIntoTei"
+                }
+              ],
+              attrs: { type: "checkbox", onclick: "return false;" },
+              domProps: {
+                checked: Array.isArray(_vm.newMergedIntoTei)
+                  ? _vm._i(_vm.newMergedIntoTei, null) > -1
+                  : _vm.newMergedIntoTei
+              },
+              on: {
+                change: function($event) {
+                  var $$a = _vm.newMergedIntoTei,
+                    $$el = $event.target,
+                    $$c = $$el.checked ? true : false
+                  if (Array.isArray($$a)) {
+                    var $$v = null,
+                      $$i = _vm._i($$a, $$v)
+                    if ($$el.checked) {
+                      $$i < 0 && (_vm.newMergedIntoTei = $$a.concat([$$v]))
+                    } else {
+                      $$i > -1 &&
+                        (_vm.newMergedIntoTei = $$a
+                          .slice(0, $$i)
+                          .concat($$a.slice($$i + 1)))
+                    }
+                  } else {
+                    _vm.newMergedIntoTei = $$c
+                  }
+                }
+              }
+            })
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("br"),
+      _vm._v(" "),
+      _c(_vm.editEntryComponent, {
+        tag: "component",
+        attrs: { entry: _vm.oldEntry }
+      }),
+      _vm._v(" "),
+      _c("table", [
+        _vm.showEditFlagsBox
+          ? _c("div", [
+              _c("fieldset", [
+                _c("legend", [_vm._v("Edit Flags")]),
+                _vm._v(" "),
+                _vm.userRole == "admin"
+                  ? _c("div", [
+                      _c("tr", [
+                        _c("td", [_vm._v("Approved:")]),
+                        _c("td", [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.newApproved,
+                                expression: "newApproved"
+                              }
+                            ],
+                            attrs: { type: "checkbox" },
+                            domProps: {
+                              checked: Array.isArray(_vm.newApproved)
+                                ? _vm._i(_vm.newApproved, null) > -1
+                                : _vm.newApproved
+                            },
+                            on: {
+                              change: function($event) {
+                                var $$a = _vm.newApproved,
+                                  $$el = $event.target,
+                                  $$c = $$el.checked ? true : false
+                                if (Array.isArray($$a)) {
+                                  var $$v = null,
+                                    $$i = _vm._i($$a, $$v)
+                                  if ($$el.checked) {
+                                    $$i < 0 &&
+                                      (_vm.newApproved = $$a.concat([$$v]))
+                                  } else {
+                                    $$i > -1 &&
+                                      (_vm.newApproved = $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1)))
+                                  }
+                                } else {
+                                  _vm.newApproved = $$c
+                                }
+                              }
+                            }
+                          })
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("tr", [
+                        _c("td", [_vm._v("Merged in upstream")]),
+                        _c("td", [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.newMergedIntoTei,
+                                expression: "newMergedIntoTei"
+                              }
+                            ],
+                            attrs: { type: "checkbox" },
+                            domProps: {
+                              checked: Array.isArray(_vm.newMergedIntoTei)
+                                ? _vm._i(_vm.newMergedIntoTei, null) > -1
+                                : _vm.newMergedIntoTei
+                            },
+                            on: {
+                              change: function($event) {
+                                var $$a = _vm.newMergedIntoTei,
+                                  $$el = $event.target,
+                                  $$c = $$el.checked ? true : false
+                                if (Array.isArray($$a)) {
+                                  var $$v = null,
+                                    $$i = _vm._i($$a, $$v)
+                                  if ($$el.checked) {
+                                    $$i < 0 &&
+                                      (_vm.newMergedIntoTei = $$a.concat([$$v]))
+                                  } else {
+                                    $$i > -1 &&
+                                      (_vm.newMergedIntoTei = $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1)))
+                                  }
+                                } else {
+                                  _vm.newMergedIntoTei = $$c
+                                }
+                              }
+                            }
+                          })
+                        ])
+                      ])
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _c("tr", [
+                  _c("td", [_vm._v("Additional flags:")]),
+                  _c("td", [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.flagsInput,
+                          expression: "flagsInput"
+                        }
+                      ],
+                      domProps: { value: _vm.flagsInput },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.flagsInput = $event.target.value
+                        }
+                      }
+                    })
+                  ])
+                ]),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    on: {
+                      click: function($event) {
+                        if (
+                          !("button" in $event) &&
+                          _vm._k(
+                            $event.keyCode,
+                            "preventDefault",
+                            undefined,
+                            $event.key
+                          )
+                        ) {
+                          return null
+                        }
+                        _vm.cancelEditFlags()
+                      }
+                    }
+                  },
+                  [_vm._v("Cancel")]
+                )
+              ])
+            ])
+          : _c("div", [
+              _c(
+                "a",
+                {
+                  on: {
+                    click: function($event) {
+                      $event.preventDefault()
+                      _vm.setShowEditFlags(true)
+                    }
+                  }
+                },
+                [_vm._v("Edit Flags")]
+              )
+            ]),
+        _vm._v(" "),
+        _c("br"),
+        _vm._v(" "),
+        _c("tr", [
+          _c("td", [_vm._v("Comment:")]),
+          _c("td", [
+            _c("textarea", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.newComment,
+                  expression: "newComment"
+                }
+              ],
+              domProps: { value: _vm.newComment },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.newComment = $event.target.value
+                }
+              }
+            })
+          ])
+        ]),
+        _vm._v(" "),
+        !_vm.showEditFlagsBox && !_vm.showEditEntryBox
+          ? _c(
+              "a",
+              {
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    _vm.submitPatch($event)
+                  }
+                }
+              },
+              [_vm._v("Submit Comment")]
+            )
+          : _c(
+              "a",
+              {
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    _vm.submitPatch($event)
+                  }
+                }
+              },
+              [_vm._v("Submit Patch")]
+            )
+      ])
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-3728fbf9", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);

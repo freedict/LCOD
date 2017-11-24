@@ -12,7 +12,7 @@
      props: ["entry"],
      methods: {
          entry2html(entry) {
-             if (!entry) {
+             if (!entry ) {
                  return "";
              }
              var parsedEntry = parser.parse(entry);

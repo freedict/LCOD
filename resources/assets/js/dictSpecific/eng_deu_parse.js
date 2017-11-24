@@ -41,7 +41,7 @@ var Word = {
         if (this.usg)
             htmlStr += " ["+this.usg+"]";
         return htmlStr;
-    },
+    }
 }
 
 function Headword() {
