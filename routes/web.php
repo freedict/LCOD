@@ -29,7 +29,7 @@ Route::get('/tests', 'HomeController@tests')->name('tests');
 
 Route::get('/edit/{dict}/{groupId}', 'HomeController@edit')->name('edit');
 
-Route::post('/submitPatch/', function (Request $request) {
+Route::post('/submitPatch', function (Request $request) {
     $dictLib = resolve('App\Library\Services\Dict');
     $input = $request->all();
     $input = array_map(function ($value) { return ($value != null) ? $value : ""; }, $input);
@@ -48,7 +48,7 @@ Route::post('/submitPatch/', function (Request $request) {
                                 'newEntry' => $input['newEntry']));
 })->middleware('auth');
 
-Route::post('/submitPatchUpdate/', function (Request $request) {
+Route::post('/submitPatchUpdate', function (Request $request) {
     $dictLib = resolve('App\Library\Services\Dict');
     $input = $request->all();
     $input = array_map(function ($value) { return ($value != null) ? $value : ""; }, $input);

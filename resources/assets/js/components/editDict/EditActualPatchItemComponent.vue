@@ -82,7 +82,7 @@
                  mergedIntoTei:this.newMergedIntoTei,
                  keywords:this.newEntryKeywords,
              };
-             axios.post('/submitPatch/',
+             axios.post('/submitPatch',
                         data
              ).then(function (response) {
                  location.reload();

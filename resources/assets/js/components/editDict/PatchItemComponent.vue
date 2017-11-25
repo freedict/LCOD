@@ -60,7 +60,7 @@
                  approved:this.item.approved,
                  mergedIntoTei:this.item.merged_into_tei,
              };
-             axios.post('/submitPatchUpdate/',
+             axios.post('/submitPatchUpdate',
                         data
              ).then(function (response) {
                  location.reload();
