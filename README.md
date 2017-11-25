@@ -161,19 +161,19 @@ You are done! Enjoy!
 
 ## Configure and start production server
 
-\# cat >/etc/apache2/sites-available/lcod.conf <<EOL
-
-<VirtualHost *:80>
-        \#ServerName lcod.freedict.org
-        DocumentRoot /var/www/LCOD/public
-        <Directory /var/www/LCOD>
-                AllowOverride All
-        </Directory>
-        ErrorLog ${APACHE\_LOG\_DIR}/error.log
-        LogLevel warn
-        CustomLog ${APACHE\_LOG\_DIR}/access.log combined
-</VirtualHost>
-EOL
+<!-- language: lang-none -->
+    # cat >/etc/apache2/sites-available/lcod.conf << EOL
+    <VirtualHost *:80>  
+        #ServerName lcod.freedict.org  
+        DocumentRoot /var/www/LCOD/public  
+        <Directory /var/www/LCOD>  
+                AllowOverride All  
+        </Directory>  
+        ErrorLog ${APACHE_LOG_DIR}/error.log  
+        LogLevel warn  
+        CustomLog ${APACHE_LOG_DIR}/access.log combined  
+    </VirtualHost>  
+    EOL
 
 \# a2dissite 000-default.conf
 \# a2ensite lcod.conf
