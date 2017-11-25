@@ -21,12 +21,12 @@
                                     <option></option>
                                 </select>
                                 Usg: <input v-model="trans.usg" style="width: 70px">
-                                Num: <select v-model="parsedEntry.headword.num">
+                                Num: <select v-model="trans.num">
                                     <option>s</option>
                                     <option>pl</option>
                                     <option></option>
                                 </select>
-                                Pos: <select v-model="parsedEntry.headword.pos">
+                                Pos: <select v-model="trans.pos">
                                     <option>n</option>
                                     <option></option>
                                 </select>
