@@ -1,43 +1,29 @@
-<div id="table-of-contents">
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
 
-Table of Contents
------------------
+- [About](#about)
+- [Architecture](#architecture)
+- [Tests](#tests)
+- [Adding support for specific dictionaries](#adding-support-for-specific-dictionaries)
+- [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+    - [Prepare Database](#prepare-database)
+        - [Create database and the database user](#create-database-and-the-database-user)
+        - [Generate the sql data files out of the tei](#generate-the-sql-data-files-out-of-the-tei)
+        - [Install the postgres database extensions](#install-the-postgres-database-extensions)
+        - [Populate database tables](#populate-database-tables)
+    - [Start testing server](#start-testing-server)
+    - [Start production server](#start-production-server)
+- [TO DO list](#to-do-list)
+- [Contact](#contact)
+- [Licence](#licence)
 
-<div id="text-table-of-contents">
-
--   [1. About](#orgd17d93d)
--   [2. Architecture](#org7e89901)
--   [3. Tests](#org55b54ab)
--   [4. Adding support for specific dictionaries](#org3dea49f)
--   [5. Installation](#org492f51b)
-    -   [5.1. Only testing the app](#orge12ca1d)
-        -   [5.1.1. Prerequisites](#org5aa37db)
-        -   [5.1.2. Create database and the database user](#org0932e4c)
-        -   [5.1.3. Generate the sql data files out of the
-            tei](#orgffc32c7)
-        -   [5.1.4. Install the postgres database
-            extensions](#org1950e6c)
-        -   [5.1.5. Populate database tables](#org262de5a)
-        -   [5.1.6. install packages, configure server](#org7d2faef)
-        -   [5.1.7. Start server](#org06046d9)
-    -   [5.2. Full server setup](#org29a0216)
--   [6. TO DO List](#orgc5c10de)
--   [7. Contact](#org831882b)
--   [8. Licence](#org4a95f88)
-
-</div>
-
-</div>
-
-<a id="orgd17d93d"></a>
+<!-- markdown-toc end -->
 
 # About
 
 LCOD is a libre collaborative online dictionary app. It allows you to read and
 collaboratively edit dictionaries from freedict.org.
-
-
-<a id="org7e89901"></a>
 
 # Architecture
 
@@ -51,17 +37,17 @@ entry, which has no effective patch.
 
 A patch in the patches tables has the following fields:
 
-id                 
-user\_id            
-group\_id           
-old\_entry          
-new\_entry          
-comment             
-old\_flags          
-new\_flags          
-approved           
-merged\_into\_tei    
-creation\_date      
+- id
+- user\_id
+- group\_id
+- old\_entry
+- new\_entry
+- comment
+- old\_flags
+- new\_flags
+- approved
+- merged\_into\_tei
+- creation\_date
 
 The groupId is just the md5 sum of the associated tei entry. A group consists of
 the tei entry from the tei table and all associated patches. The order of the
@@ -72,9 +58,6 @@ want to add a comment, you have to commit a patch. If you want to edit an
 existing patch, you have to commit a new patch. No matter what you do, you have
 to commit a new patch. The only exception is approving and setting the merged
 into upstream flag.
-
-
-<a id="org55b54ab"></a>
 
 # Tests
 
@@ -87,52 +70,58 @@ Tests for javascript tei parsing and rendering are in production. Qunit is
 setup. You can writes your tests into resources/assets/js/tests.js and run them
 via <http://localhost:8000/tests>.
 
-
-<a id="org3dea49f"></a>
-
 # Adding support for specific dictionaries
 
 You can find all dictionary specific stuff in resources/assets/js/dictSpecific/.
 You can register your dict specific vue components in resources/assets/js/app.js
 .
 
-
-<a id="org492f51b"></a>
-
 # Installation
 
+## Prerequisites
 
-<a id="orge12ca1d"></a>
+- composer
+- npm
+- libpng-dev
+- make
+- autoconf
+- python3-psycopg2
+- python3-lxml
+- php 
+- php-xdebug
+- php-mcrypt 
+- php-gd 
+- php-mbstring
+- php-dom
+- php-zip
+- php-pgsql
+- apache2
+- postgresql
+- libapache2-mod-php
 
-## Only testing the app
+Install via apt-get: 
 
+$ sudo apt-get install composer libpng-dev make autoconf python3-psycopg2 python3-lxml php  php-xdebug php-mcrypt php-gd php-mbstring php-dom php-zip php-pgsql apache2 postgresql libapache2-mod-php
 
-<a id="org5aa37db"></a>
+I used Debian 9 (Stretch). I had to install npm manually.
 
-### Prerequisites
+If you have the prerequisites, run
 
--   php-xdebug
--   composer
--   php
--   npm
--   postgresql
--   python3-psycopg2
+$ cd $(LCOD\_ROOT)  
+$ composer install  
+$ npm install  
+$ cp .env.example .env  
+$ php artisan key:generate  
+$ npm run production  
 
-For ubuntu: $ sudo apt-get install php postgresql python3-psycopg2 php-xdebug  
-
-I used ubuntu 16.04. I had to install composer und npm manually. The
-distro packages were too old.
-
-
-<a id="org0932e4c"></a>
+## Prepare Database
 
 ### Create database and the database user
 
 $ sudo -u postgres createuser -P -d fd  
+$ sudo nano /etc/postgresql/versionNumber/main/pg_hba.conf  
+// and change 'peer' to 'md5' in the row 'local all all peer'  
 $ sudo -u postgres createdb -O fd freedict  
-
-
-<a id="orgffc32c7"></a>
 
 ### Generate the sql data files out of the tei
 
@@ -142,16 +131,10 @@ $ cd $(LCOD\_ROOT)/maintainerScripts
 $ cp eng-deu-short-for-testing.tei dotTeis/eng-deu.tei  
 $ make teis2sqls  
 
-
-<a id="org1950e6c"></a>
-
 ### Install the postgres database extensions
 
 $ cd $(LCOD\_ROOT)/maintainerScripts  
 $ sudo -u postgres make installExtensions  
-
-
-<a id="org262de5a"></a>
 
 ### Populate database tables
 
@@ -161,21 +144,7 @@ $ php artisan migrate
 $ cd maintainerScripts/  
 $ PGPASSWORD=root make importSqls  
 
-
-<a id="org7d2faef"></a>
-
-### install packages, configure server
-
-$ cd $(LCOD\_ROOT)  
-$ composer install  
-$ npm install  
-$ cp .env.example .env  
-$ php artisan key:generate  
-
-
-<a id="org06046d9"></a>
-
-### Start server
+## Start testing server
 
 $ php artisan serve
 
@@ -187,38 +156,28 @@ $ npm run watch
 When debugging, consider <https://github.com/laravel/framework/issues/18515> and
 install php-xdebug.
 
-Enjoy!
+## Start production server
 
+See https://tecadmin.net/install-laravel-framework-on-ubuntu/
 
-<a id="org29a0216"></a>
+You also have to run: # a2enmod rewrite && service apache2 restart
 
-## Full server setup
+# TO DO list
 
-TODO: Add me!
-
-
-<a id="orgc5c10de"></a>
-
-# TO DO List
-
--   multilingual
--   support for more dictionaries
--   make everything pretty
--   page for entry history
--   page for searching patches
--   page for adding users to admin group
-
-
-<a id="org831882b"></a>
+- multilingual
+- support for more dictionaries
+- make everything pretty
+- page for entry history
+- page for searching patches
+- page for adding users to admin group
 
 # Contact
 
 See the freedict mailinglist.
 
-
-<a id="org4a95f88"></a>
-
 # Licence
 
-The app is licenced under the GNU GENERAL PUBLIC LICENSE Version 3. See COPYING file for more information.
+The app is licenced under the GNU GENERAL PUBLIC LICENSE Version 3. See COPYING
+file for more information. Copyright owner are Sebastian Humenda, Andreas J.
+Heil and all other people with write access to the FreeDict repos.
 
