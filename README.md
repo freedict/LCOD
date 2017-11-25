@@ -175,11 +175,11 @@ You are done! Enjoy!
     </VirtualHost>  
     EOL
 
-\# a2dissite 000-default.conf
-\# a2ensite lcod.conf
-\# a2enmod rewrite
-\# chown -R www-data.www-data /var/www/LCOD
-\# service apache restart
+\# a2dissite 000-default.conf  
+\# a2ensite lcod.conf  
+\# a2enmod rewrite  
+\# chown -R www-data.www-data /var/www/LCOD  
+\# service apache restart  
 
 You are done! Enjoy!
 
