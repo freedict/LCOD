@@ -13,7 +13,7 @@
         - [Install the postgres database extensions](#install-the-postgres-database-extensions)
         - [Populate database tables](#populate-database-tables)
     - [Start testing server](#start-testing-server)
-    - [Start production server](#start-production-server)
+    - [Configure and start production server](#configure-and-start-production-server)
 - [TO DO list](#to-do-list)
 - [Contact](#contact)
 - [Licence](#licence)
@@ -121,6 +121,7 @@ $ npm run production
 $ sudo -u postgres createuser -P -d fd  
 $ sudo nano /etc/postgresql/versionNumber/main/pg_hba.conf  
 // and change 'peer' to 'md5' in the row 'local all all peer'  
+$ service postgresql restart  
 $ sudo -u postgres createdb -O fd freedict  
 
 ### Generate the sql data files out of the tei
@@ -156,11 +157,31 @@ $ npm run watch
 When debugging, consider <https://github.com/laravel/framework/issues/18515> and
 install php-xdebug.
 
-## Start production server
+You are done! Enjoy!
 
-See https://tecadmin.net/install-laravel-framework-on-ubuntu/
+## Configure and start production server
 
-You also have to run: # a2enmod rewrite && service apache2 restart
+\# cat >/etc/apache2/sites-available/lcod.conf <<EOL
+
+<VirtualHost *:80>
+        \#ServerName lcod.freedict.org
+        DocumentRoot /var/www/LCOD/public
+        <Directory /var/www/LCOD>
+                AllowOverride All
+        </Directory>
+        ErrorLog ${APACHE\_LOG\_DIR}/error.log
+        LogLevel warn
+        CustomLog ${APACHE\_LOG\_DIR}/access.log combined
+</VirtualHost>
+EOL
+
+\# a2dissite 000-default.conf
+\# a2ensite lcod.conf
+\# a2enmod rewrite
+\# chown -R www-data.www-data /var/www/LCOD
+\# service apache restart
+
+You are done! Enjoy!
 
 # TO DO list
 
