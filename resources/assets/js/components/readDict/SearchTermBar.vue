@@ -36,6 +36,7 @@
              var self = this;
              $.getJSON("api/suggestion/"+self.selectedDict+"/"+self.searchbarText, function (data) {
                  self.suggestions = data;
+                 $("#searchbar").autocomplete("search", self.searchbarText);
              });
          },
 
