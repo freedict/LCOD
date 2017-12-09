@@ -30,7 +30,8 @@ const store = new Vuex.Store({
         didALookup: false,
         showEditEntryBox: false,
         userName: "",
-        userRole: ""
+        userRole: "",
+        newEntryKeywords: []
     },
     mutations: {
         setSelectedDict (state, dict) {
@@ -77,7 +78,8 @@ Vue.component('search-result-box', require('./components/readDict/SearchResultBo
 Vue.component('dict-read', require('./components/readDict/DictReadComponent.vue'));
 
 Vue.component('patch-item', require('./components/editDict/PatchItemComponent.vue'));
-Vue.component('dict-edit', require('./components/editDict/DictEditComponent.vue'));
+Vue.component('edit-entry-page', require('./components/editDict/EditEntryPageComponent.vue'));
+Vue.component('new-entry-page', require('./components/editDict/NewEntryPageComponent.vue'));
 Vue.component('edit-actual-patch-item', require('./components/editDict/EditActualPatchItemComponent.vue'));
 
 Vue.component('eng-deu-edit-entry', require('./dictSpecific/eng_deu_edit_entry.vue'));

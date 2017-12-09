@@ -31,10 +31,21 @@ class HomeController extends Controller
         return view('tests');
     }
 
-    public function edit($dict, $groupId)
+    public function editDict()
+    {
+        return view('editDict');
+    }
+
+    public function editEntry($dict, $groupId)
     {
         $dictLib = resolve('App\Library\Services\Dict');
 
-        return view('edit', ['dict' => $dict, 'groupId' => $groupId]);
+        return view('editEntry', ['dict' => $dict, 'groupId' => $groupId]);
     }
+
+    public function newEntry()
+    {
+        return view('newEntry');
+    }
+
 }

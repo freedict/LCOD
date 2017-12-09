@@ -1,6 +1,7 @@
 <template>
-    <div class="edit_patch_item">
-        <h1>Actual Entry</h1>
+    <div v-if="previousItem && (previousItem.entry || previousItem.old_entry)" class="edit_patch_item">
+        <h1 v-if="previousItem.entry == '<entry><sense></sense></entry>'">New Entry</h1>
+        <h1 v-else>Actual Entry</h1>
         <table border="1">
             <tr><td>Entry:</td><td><component v-bind:is="entryComponent" :entry="newEntry"></component></td></tr>
             <tr><td>Flags:</td>

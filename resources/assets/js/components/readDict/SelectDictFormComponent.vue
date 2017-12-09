@@ -34,7 +34,7 @@
                  }
                  return 0; // should not be reached
              }
-             $.get("api/get-all-dict-names", (data) => {
+             $.get("/api/get-all-dict-names", (data) => {
                  var dictLst=JSON.parse(data);
                  for (var i = 0; i < dictLst.length; i++) {
                      var column_number = column_number_for(i, 6, dictLst.length);

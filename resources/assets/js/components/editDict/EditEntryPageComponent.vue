@@ -1,8 +1,8 @@
 <template>
-    <div class="dict-edit">
-        <edit-actual-patch-item v-bind:previous-item="lookupPatchGroupResult[0]"></edit-actual-patch-item>
+    <div class="edit-entry-page">
+        <edit-actual-patch-item :previous-item="lookupPatchGroupResult[0]"></edit-actual-patch-item>
         <div v-if="lookupPatchGroupResult.slice(0,-1).length > 0">
-            <h1 >Entry History</h1>
+            <h1>Entry History</h1>
             <div v-for="patchItem in lookupPatchGroupResult.slice(0,-1)">
                 <patch-item :item="patchItem"></patch-item>
                 <br>

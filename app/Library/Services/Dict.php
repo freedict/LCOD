@@ -196,22 +196,27 @@ ORDER BY $patchesTable.group_id, $patchesTable.id DESC;
         $mergedIntoTei = !isset($optArgs['mergedIntoTei']) ? false : $optArgs['mergedIntoTei'];
         $keywords= !isset($optArgs['keywords']) ? [] : $optArgs['keywords'];
 
-        Log::Info($optArgs);
-
         $patchesTable = 'patches_'.$dict;
         $patchesTableIndex = $patchesTable.'_index';
         $teiTable = 'tei_'.$dict;
 
         // calculate oldEntry
-        $lastPatchNewEntry = DB::select("SELECT * FROM $patchesTable WHERE group_id=? ORDER BY id DESC LIMIT 1;", [$groupId]);
-        if (sizeof($lastPatchNewEntry) > 0) {
-            $oldEntry = $lastPatchNewEntry[0]->new_entry;
-            $oldFlags = $lastPatchNewEntry[0]->new_flags;
+        $searchResultLastPatch= DB::select("SELECT * FROM $patchesTable WHERE group_id=? ORDER BY id DESC LIMIT 1;", [$groupId]);
+        if (sizeof($searchResultLastPatch) > 0) {
+            $oldEntry = $searchResultLastPatch[0]->new_entry;
+            $oldFlags = $searchResultLastPatch[0]->new_flags;
         }
         else {
-            $oldEntry = DB::select("SELECT entry FROM $teiTable WHERE entry_hash=?;", [$groupId])[0]->entry;
-            $oldFlags =  "";
+            $searchResultOldEntryInTeiTable = DB::select("SELECT entry FROM $teiTable WHERE entry_hash=?;", [$groupId]);
+            if (sizeof($searchResultOldEntryInTeiTable) == 1){
+                $oldEntry = $searchResultOldEntryInTeiTable[0]->entry;
+            }
+            else {
+                $oldEntry =  "";
+            }
+            $oldFlags = "";
         }
+
         // insert patch
         $sqlCmd = "
 INSERT INTO $patchesTable (user_id, group_id, old_entry, new_entry, comment, old_flags, new_flags, approved, merged_into_tei)

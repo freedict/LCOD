@@ -27,16 +27,14 @@ Route::get('/', 'HomeController@index')->name('home');
 
 Route::get('/tests', 'HomeController@tests')->name('tests');
 
-Route::get('/edit/{dict}/{groupId}', 'HomeController@edit')->name('edit');
-
 Route::post('/submitPatch', function (Request $request) {
     $dictLib = resolve('App\Library\Services\Dict');
     $input = $request->all();
     $input = array_map(function ($value) { return ($value != null) ? $value : ""; }, $input);
     $approved = $input['approved'] ? true: false;
     $mergedIntoTei = $input['mergedIntoTei'] ? true: false;
-    Log::Info($input);
-    $dictLib->validateGroupIdAndDict($input['dict'], $input['groupId']);
+
+    $dictLib->validateDict($input['dict']);
 
     if ($input['approved'] && User::findOrFail(Auth::id())->role != "admin"){
         abort(400, "You have to be admin for this operation.");
@@ -45,7 +43,7 @@ Route::post('/submitPatch', function (Request $request) {
     $dictLib->submitPatch($input['dict'], Auth::id(), $input['groupId'],
                           array('comment' => $input['comment'], 'newFlags' => $input['newFlags'],
                                 'approved'=> $approved, 'mergedIntoTei' => $mergedIntoTei,
-                                'newEntry' => $input['newEntry']));
+                                'newEntry' => $input['newEntry'], 'keywords' => $input['keywords']));
 })->middleware('auth');
 
 Route::post('/submitPatchUpdate', function (Request $request) {
@@ -78,3 +76,9 @@ Route::get('/makeMeAdmin', function (Request $request) {
     $user->save();
     return "Now you are an admin!";
 });
+
+Route::get('/edit/newEntry', 'HomeController@newEntry')->name('newEntry');
+
+Route::get('/edit', 'HomeController@editDict')->name('editDict');
+
+Route::get('/edit/{dict}/{groupId}', 'HomeController@editEntry')->name('editEntry');

@@ -34,6 +34,16 @@
                 </div>
 
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
+
+                    <ul class="nav navbar-nav">
+                        <li class="{{ (Request::is('/') ? 'active' : '') }}">
+                            <a href="{{ url('') }}"><i class="fa fa-home"></i>Read</a>
+                        </li>
+                        <li class="{{ (Request::is('edit') ? 'active' : '') }}">
+                            <a href="{{ url('edit') }}">Edit</a>
+                        </li>
+                    </ul>
+
                     <!-- Left Side Of Navbar -->
                     <ul class="nav navbar-nav">
                         &nbsp;
